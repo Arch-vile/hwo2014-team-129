@@ -1,5 +1,7 @@
 package noobbot;
 
+import hwo.kurjaturskat.core.message.CarPositions;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,8 +11,11 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 
+
+
 public class Main {
     public static void main(String... args) throws IOException {
+    	
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
@@ -34,10 +39,18 @@ public class Main {
         String line = null;
 
         send(join);
-
         while((line = reader.readLine()) != null) {
-            final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
+            
+        	
+        	
+        	final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
+            
+        	
             if (msgFromServer.msgType.equals("carPositions")) {
+            	
+            	final CarPositions carPos = gson.fromJson(line, CarPositions.class);
+            	System.out.println(carPos.data[0].id.name);
+            	
                 send(new Throttle(0.5));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -73,16 +86,20 @@ abstract class SendMsg {
 
 class MsgWrapper {
     public final String msgType;
+    public final String foo;
     public final Object data;
 
-    MsgWrapper(final String msgType, final Object data) {
+    MsgWrapper(final String msgType, final String bar, final Object data) {
         this.msgType = msgType;
         this.data = data;
+        this.foo = bar;
     }
 
     public MsgWrapper(final SendMsg sendMsg) {
-        this(sendMsg.msgType(), sendMsg.msgData());
+        this(sendMsg.msgType(), "null", sendMsg.msgData());
     }
+    
+    
 }
 
 class Join extends SendMsg {
