@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Main {
     public static void main(String... args) throws IOException {
@@ -33,12 +34,15 @@ public class Main {
     }
 
     final Gson gson = new Gson();
+
     private PrintWriter writer;
 
     public Main(final BufferedReader reader, final PrintWriter writer,
             final Join join) throws IOException {
         this.writer = writer;
         String line = null;
+
+        Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
         send(join);
         while ((line = reader.readLine()) != null) {
@@ -47,6 +51,7 @@ public class Main {
                     MsgWrapper.class);
 
             if (msgFromServer.msgType.equals("carPositions")) {
+                System.out.println(prettyGson.toJson(line));
 
                 final CarPositionsMsg carPos = gson.fromJson(line,
                         CarPositionsMsg.class);
@@ -57,6 +62,8 @@ public class Main {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
                 System.out.println("Race init");
+                // Print json nicely
+                // System.out.println(prettyGson.toJson(msgFromServer));
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
             } else if (msgFromServer.msgType.equals("gameStart")) {
