@@ -11,22 +11,23 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 
-
-
 public class Main {
     public static void main(String... args) throws IOException {
-    	
+
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
         String botKey = args[3];
 
-        System.out.println("Connecting to " + host + ":" + port + " as " + botName + "/" + botKey);
+        System.out.println("Connecting to " + host + ":" + port + " as "
+                + botName + "/" + botKey);
 
         final Socket socket = new Socket(host, port);
-        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));
+        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(
+                socket.getOutputStream(), "utf-8"));
 
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(
+                socket.getInputStream(), "utf-8"));
 
         new Main(reader, writer, new Join(botName, botKey));
     }
@@ -34,23 +35,23 @@ public class Main {
     final Gson gson = new Gson();
     private PrintWriter writer;
 
-    public Main(final BufferedReader reader, final PrintWriter writer, final Join join) throws IOException {
+    public Main(final BufferedReader reader, final PrintWriter writer,
+            final Join join) throws IOException {
         this.writer = writer;
         String line = null;
 
         send(join);
-        while((line = reader.readLine()) != null) {
-            
-        	
-        	
-        	final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            
-        	
+        while ((line = reader.readLine()) != null) {
+
+            final MsgWrapper msgFromServer = gson.fromJson(line,
+                    MsgWrapper.class);
+
             if (msgFromServer.msgType.equals("carPositions")) {
-            	
-            	final CarPositions carPos = gson.fromJson(line, CarPositions.class);
-            	System.out.println(carPos.data[0].id.name);
-            	
+
+                final CarPositions carPos = gson.fromJson(line,
+                        CarPositions.class);
+                System.out.println(carPos.data[0].id.name);
+
                 send(new Throttle(0.5));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -98,8 +99,7 @@ class MsgWrapper {
     public MsgWrapper(final SendMsg sendMsg) {
         this(sendMsg.msgType(), "null", sendMsg.msgData());
     }
-    
-    
+
 }
 
 class Join extends SendMsg {
