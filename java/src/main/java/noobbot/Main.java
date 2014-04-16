@@ -1,6 +1,6 @@
 package noobbot;
 
-import hwo.kurjaturskat.core.message.CarPositions;
+import hwo.kurjatturskat.core.message.CarPositionsMsg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,8 +48,8 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
 
-                final CarPositions carPos = gson.fromJson(line,
-                        CarPositions.class);
+                final CarPositionsMsg carPos = gson.fromJson(line,
+                        CarPositionsMsg.class);
                 System.out.println(carPos.data[0].id.name);
 
                 send(new Throttle(0.5));
