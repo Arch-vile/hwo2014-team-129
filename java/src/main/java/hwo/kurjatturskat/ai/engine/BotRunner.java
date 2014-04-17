@@ -9,6 +9,8 @@ import hwo.kurjatturskat.core.message.MessageSender;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
 
 import java.io.IOException;
@@ -40,19 +42,27 @@ public class BotRunner {
         Message<?> message = null;
         while ((message = this.receiver.waitForMessage()) != null) {
 
-            switch (message.getType()) {
-            case carPositions:
-                CarPositionsMsg msg = (CarPositionsMsg) message;
-                this.world.update(msg);
-            }
-
-            Double throttle = this.driver.getThrottle(world);
-            this.sender.sendMessage(new ThrottleMsg(throttle));
+            updateWorld(message);
 
             String direction = this.driver.getLane(world);
             if (direction != null) {
                 this.sender.sendMessage(new SwitchLaneMsg(direction));
+            } else {
+                Double throttle = this.driver.getThrottle(world);
+                this.sender.sendMessage(new ThrottleMsg(throttle));
             }
+
+        }
+    }
+
+    private void updateWorld(Message<?> message) {
+        switch (message.getType()) {
+        case carPositions:
+            this.world.update((CarPositionsMsg) message);
+        case gameInit:
+            this.world.update((GameInitMsg) message);
+        case yourCar:
+            this.world.update((YourCarMsg) message);
         }
     }
 
