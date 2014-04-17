@@ -1,12 +1,15 @@
 package hwo.kurjatturskat.core.message.carpositions;
 
-public class CarPositionsMsg {
+import hwo.kurjatturskat.core.message.Message;
+import hwo.kurjatturskat.core.message.MessageType;
 
-    public Car data[];
+public class CarPositionsMsg extends Message<Car[]> {
+
     public final int gameTick;
 
-    CarPositionsMsg(Car data[], int gameTick) {
-        this.data = data;
+    public CarPositionsMsg(Car[] cars, int gameTick) {
+        super(MessageType.carPositions, cars);
         this.gameTick = gameTick;
     }
+
 }
