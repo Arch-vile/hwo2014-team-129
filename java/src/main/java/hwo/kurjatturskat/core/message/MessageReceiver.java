@@ -30,11 +30,10 @@ public class MessageReceiver {
         String line;
         while ((line = reader.readLine()) != null) {
 
-            System.out.println("Received message: " + line);
-
             Message<?> msg = gson.fromJson(line, Message.class);
 
-            MessageType type = MessageType.get(msg.getMsgType());
+            MessageType type = msg.getType() != null ? msg.getType()
+                    : MessageType.unknown;
 
             switch (type) {
             case carPositions:
@@ -49,11 +48,8 @@ public class MessageReceiver {
             case gameInit:
                 return gson.fromJson(line, GameInitMsg.class);
 
-                // TODO
-            case gameStart:
-                return new Message(MessageType.unknown);
-
             default:
+                System.err.println("Unhandled message: " + line);
                 return new Message(MessageType.unknown);
             }
 
