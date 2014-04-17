@@ -4,8 +4,8 @@ public enum MessageType {
 
     // NOTE: Enums must be in small letter for json to be outputted correctly
     carPositions("carPositions"), yourCar("yourCar"), join("join"), gameInit(
-            "gameInit"), gameStart("gameStart"), throttle("throttle"), unknown(
-            "unknown");
+            "gameInit"), gameStart("gameStart"), throttle("throttle"), switchLane(
+            "switchLane"), unknown("unknown");
 
     private final String type;
 

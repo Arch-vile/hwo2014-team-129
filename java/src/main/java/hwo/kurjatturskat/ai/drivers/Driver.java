@@ -1,10 +1,11 @@
 package hwo.kurjatturskat.ai.drivers;
 
-import hwo.kurjatturskat.core.message.ControlMessageMsg;
-import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.model.World;
 
 public interface Driver {
 
-    public ControlMessageMsg actOncarPositions(CarPositionsMsg positions);
+    public double getThrottle(World world);
+
+    public String getLane(World world);
 
 }

@@ -1,12 +1,15 @@
 package hwo.kurjatturskat.ai.engine;
 
 import hwo.kurjatturskat.ai.drivers.Driver;
+import hwo.kurjatturskat.ai.drivers.SlowBot;
 import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
+import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.model.World;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -19,6 +22,8 @@ public class BotRunner {
     private final String botName;
     private final String botKey;
 
+    private World world;
+
     public BotRunner(MessageReceiver receiver, MessageSender sender,
             Driver driver, String botName, String botKey) {
         this.receiver = receiver;
@@ -26,6 +31,7 @@ public class BotRunner {
         this.driver = driver;
         this.botName = botName;
         this.botKey = botKey;
+        this.world = new World();
     }
 
     public void run() throws IOException {
@@ -37,7 +43,15 @@ public class BotRunner {
             switch (message.getType()) {
             case carPositions:
                 CarPositionsMsg msg = (CarPositionsMsg) message;
-                sender.sendMessage(new ThrottleMsg(1.0d));
+                this.world.update(msg);
+            }
+
+            Double throttle = this.driver.getThrottle(world);
+            this.sender.sendMessage(new ThrottleMsg(throttle));
+
+            String direction = this.driver.getLane(world);
+            if (direction != null) {
+                this.sender.sendMessage(new SwitchLaneMsg(direction));
             }
         }
     }
@@ -54,7 +68,7 @@ public class BotRunner {
 
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
-                new MessageSender(socket), null, botName, botKey);
+                new MessageSender(socket), new SlowBot(), botName, botKey);
 
         runner.run();
     }
