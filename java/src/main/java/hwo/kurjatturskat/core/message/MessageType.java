@@ -6,7 +6,7 @@ public enum MessageType {
     carPositions("carPositions"), yourCar("yourCar"), join("join"), gameInit(
             "gameInit"), gameStart("gameStart"), throttle("throttle"), switchLane(
             "switchLane"), unknown("unknown"), lapFinished("lapFinished"), spawn(
-            "spawn"), crash("crash"), finish("finish");
+            "spawn"), crash("crash"), finish("finish"), gameEnd("gameEnd");
 
     private final String type;
 
