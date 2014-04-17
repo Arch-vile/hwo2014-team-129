@@ -1,14 +1,14 @@
-package hwo.kurjatturskat.core.message;
+package hwo.kurjatturskat.core.message.carpositions;
 
-public class PiecePositionsMsg {
+public class PiecePosition {
 
     public final int pieceIndex;
     public final double inPieceDistance;
-    public final LaneMsg lane;
+    public final Lane lane;
     public final int lap;
 
-    public PiecePositionsMsg(int pieceIndex, double inPieceDistance,
-            LaneMsg lane, int lap) {
+    public PiecePosition(int pieceIndex, double inPieceDistance, Lane lane,
+            int lap) {
         this.pieceIndex = pieceIndex;
         this.inPieceDistance = inPieceDistance;
         this.lane = lane;

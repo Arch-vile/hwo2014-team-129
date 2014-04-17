@@ -1,10 +1,10 @@
-package hwo.kurjatturskat.core.message;
+package hwo.kurjatturskat.core.message.carpositions;
 
-public class LaneMsg {
+public class Lane {
     public final int startLaneIndex;
     public final int endLaneIndex;
 
-    public LaneMsg(int startLaneIndex, int endLaneIndex) {
+    public Lane(int startLaneIndex, int endLaneIndex) {
         this.startLaneIndex = startLaneIndex;
         this.endLaneIndex = endLaneIndex;
     }

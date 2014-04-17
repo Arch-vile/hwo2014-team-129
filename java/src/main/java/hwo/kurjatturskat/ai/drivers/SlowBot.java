@@ -1,7 +1,7 @@
 package hwo.kurjatturskat.ai.drivers;
 
-import hwo.kurjatturskat.core.message.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.ControlMessageMsg;
+import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 
 public class SlowBot implements Driver {
 

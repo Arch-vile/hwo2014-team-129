@@ -1,6 +1,8 @@
 package noobbot;
 
-import hwo.kurjatturskat.core.message.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +33,7 @@ public class Main {
                 socket.getInputStream(), "utf-8"));
 
         new Main(reader, writer, new Join(botName, botKey));
+        socket.close();
     }
 
     final Gson gson = new Gson();
@@ -49,21 +52,32 @@ public class Main {
 
             final MsgWrapper msgFromServer = gson.fromJson(line,
                     MsgWrapper.class);
-
             if (msgFromServer.msgType.equals("carPositions")) {
                 System.out.println(prettyGson.toJson(line));
 
                 final CarPositionsMsg carPos = gson.fromJson(line,
                         CarPositionsMsg.class);
-                System.out.println(carPos.data[0].id.name);
-
-                send(new Throttle(0.5));
+                if (carPos.data[0].piecePosition.pieceIndex > 37) {
+                    send(new Throttle(1.0));
+                } else {
+                    send(new Throttle(0.65));
+                }
+            } else if (msgFromServer.msgType.equals("yourCar")) {
+                final YourCarMsg myCar = gson.fromJson(line, YourCarMsg.class);
+                System.out.println("yourCar name=" + myCar.data.name
+                        + " color=" + myCar.data.color);
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
                 System.out.println("Race init");
                 // Print json nicely
                 // System.out.println(prettyGson.toJson(msgFromServer));
+
+                final GameInitMsg gameInit = gson.fromJson(line,
+                        GameInitMsg.class);
+                System.out.println("gameInit Laps="
+                        + gameInit.data.race.raceSession.laps + " Pieces: "
+                        + gameInit.data.race.track.pieces.length);
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
             } else if (msgFromServer.msgType.equals("gameStart")) {
