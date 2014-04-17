@@ -59,8 +59,10 @@ public class BotRunner {
         switch (message.getType()) {
         case carPositions:
             this.world.update((CarPositionsMsg) message);
+            break;
         case gameInit:
             this.world.update((GameInitMsg) message);
+            break;
         case yourCar:
             this.world.update((YourCarMsg) message);
         }
