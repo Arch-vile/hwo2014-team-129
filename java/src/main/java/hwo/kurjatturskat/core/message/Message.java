@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 public class Message<T> {
 
     private MessageType msgType;
-    private T data = null;
+    private T data;
 
     public Message(MessageType type) {
         this.msgType = type;
@@ -16,24 +16,12 @@ public class Message<T> {
         this.data = data;
     }
 
-    public String getMsgType() {
-        return msgType.getType();
-    }
-
     public MessageType getType() {
         return this.msgType;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = MessageType.get(msgType);
-    }
-
     public T getData() {
         return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
 
     public String toJson() {
