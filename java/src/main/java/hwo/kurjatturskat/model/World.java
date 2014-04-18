@@ -21,6 +21,8 @@ public class World {
 
     private TrackPosition previousPosition;
 
+    private double distanceTraveled = 0.0;
+
     public void update(CarPositionsMsg msg) {
         PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
                 this.yourCar);
@@ -29,15 +31,18 @@ public class World {
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
                 myPiecePos.lane);
 
-        this.myCarTravels.add(trackPos);
+        // this.myCarTravels.add(trackPos);
 
         double speed = 0.0;
 
         if (this.previousPosition != null) {
+            this.distanceTraveled += this.getDistance(this.previousPosition,
+                    trackPos);
             speed = this.getSpeed(this.previousPosition, trackPos);
         }
         this.previousPosition = trackPos;
-        System.out.println("Speed (" + myPiecePos.pieceIndex + "): " + speed);
+        System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
+                + this.distanceTraveled + "): " + speed);
 
     }
 
