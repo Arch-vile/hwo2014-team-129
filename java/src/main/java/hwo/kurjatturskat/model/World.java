@@ -10,7 +10,6 @@ import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class World {
 
@@ -19,6 +18,8 @@ public class World {
     private boolean onTrack;
 
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
+
+    private TrackPosition previousPosition;
 
     public void update(CarPositionsMsg msg) {
         PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
@@ -30,16 +31,13 @@ public class World {
 
         this.myCarTravels.add(trackPos);
 
-        int posSize = this.myCarTravels.size();
-        System.out.println("Positions size: " + posSize);
-        List<TrackPosition> trackPoses = this.myCarTravels.subList(0, 1);
-        if (posSize > 1) {
-            trackPoses = this.myCarTravels.subList(posSize - 2, posSize);
-        }
+        double speed = 0.0;
 
-        double distanceMoved = this.getDistanceMoved(trackPoses);
-        System.out.println("Distance moved (" + myPiecePos.pieceIndex + "): "
-                + distanceMoved);
+        if (this.previousPosition != null) {
+            speed = this.getSpeed(this.previousPosition, trackPos);
+        }
+        this.previousPosition = trackPos;
+        System.out.println("Speed (" + myPiecePos.pieceIndex + "): " + speed);
 
     }
 
@@ -102,42 +100,46 @@ public class World {
     }
 
     /**
-     * We return the distance moved we can gather from given track positions.
+     * Retrieve the speed between two track positions.
      * 
-     * @param positions
+     * @param start
+     * @param end
      * @return
      */
-    public double getDistanceMoved(List<TrackPosition> positions) {
-        double distance = 0.0;
-        TrackPieces currPiece = null;
-        TrackPieces prevPiece = null;
-        TrackPosition prevPosition = null;
+    public double getSpeed(TrackPosition start, TrackPosition end) {
+        int startTime = start.gameTick;
+        int endTime = end.gameTick;
 
-        for (TrackPosition position : positions) {
-            double tempDistance = 0.0; // distance from one absolute position in
-                                       // piece
-            currPiece = this.trackModel.getPieceForIndex(position.pieceIndex);
-            tempDistance += position.inPieceDistance;
-            if (prevPosition != null) {
-                if (!prevPiece.equals(currPiece)) {
-                    // add the end of the previous piece to distance traveled
-                    if (!prevPiece.isCurve()) {
-                        tempDistance += prevPiece.length
-                                - prevPosition.inPieceDistance;
-                    } else {
-                        // this should consider the lane
-                        tempDistance += (prevPiece.angle / 360)
-                                * prevPiece.radius
-                                - prevPosition.inPieceDistance;
-                    }
-                } else {
-                    tempDistance -= prevPosition.inPieceDistance;
-                }
-            }
-            prevPiece = currPiece;
-            prevPosition = position;
-            distance += tempDistance;
+        double distance = this.getDistance(start, end);
+
+        return distance / (endTime - startTime);
+    }
+
+    /**
+     * Tells distance between two following track positions.
+     * 
+     * @param start
+     * @param end
+     * @return
+     */
+    public double getDistance(TrackPosition start, TrackPosition end) {
+        if (start == null) {
+            return end.inPieceDistance;
         }
+        if (start.pieceIndex == end.pieceIndex) {
+            // no handling of lanes yet
+            return end.inPieceDistance - start.inPieceDistance;
+        }
+        double distance = 0.0;
+        TrackPieces startPiece = this.trackModel
+                .getPieceForIndex(start.pieceIndex);
+        if (startPiece.isCurve()) {
+            distance += (startPiece.angle / 360) * startPiece.radius
+                    - start.inPieceDistance;
+        } else {
+            distance += startPiece.length - start.inPieceDistance;
+        }
+        distance += end.inPieceDistance;
 
         return distance;
     }
