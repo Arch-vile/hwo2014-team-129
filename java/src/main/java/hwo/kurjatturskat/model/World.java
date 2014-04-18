@@ -17,7 +17,6 @@ public class World {
     }
 
     public void update(YourCarMsg message) {
-        // TODO Auto-generated method stub
 
     }
 
