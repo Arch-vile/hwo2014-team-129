@@ -7,6 +7,7 @@ import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class World {
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
     private TrackPosition previousPosition;
+
+    private TrackLanes[] lanes;
 
     private double distanceTraveled = 0.0;
 
@@ -48,6 +51,7 @@ public class World {
 
     public void update(GameInitMsg message) {
         this.trackModel = new TrackModel(message.getData().race.track.pieces);
+        this.lanes = message.getData().race.track.lanes;
     }
 
     public void setYourCarId(CarIdentifier carId) {
@@ -132,15 +136,28 @@ public class World {
             return end.inPieceDistance;
         }
         if (start.pieceIndex == end.pieceIndex) {
-            // no handling of lanes yet
             return end.inPieceDistance - start.inPieceDistance;
         }
         double distance = 0.0;
         TrackPieces startPiece = this.trackModel
                 .getPieceForIndex(start.pieceIndex);
         if (startPiece.isCurve()) {
+            // handle lane distance
+            double correctedRadius = startPiece.radius;
+            double ourLaneOffset = 0.0;
+            for (TrackLanes lane : this.lanes) {
+                if (start.lane.endLaneIndex == lane.id) {
+                    ourLaneOffset = lane.distanceFromCenter;
+                    break;
+                }
+            }
+            if (startPiece.angle < 0) {
+                ourLaneOffset *= -1;
+            }
+
             distance += ((startPiece.angle / 360) * 2 * Math.PI)
-                    * startPiece.radius - start.inPieceDistance;
+                    * (startPiece.radius - ourLaneOffset)
+                    - start.inPieceDistance;
         } else {
             distance += startPiece.length - start.inPieceDistance;
         }
