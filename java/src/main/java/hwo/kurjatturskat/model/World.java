@@ -31,9 +31,10 @@ public class World {
         this.myCarTravels.add(trackPos);
 
         int posSize = this.myCarTravels.size();
-        List<TrackPosition> trackPoses = this.myCarTravels.subList(0, 0);
+        System.out.println("Positions size: " + posSize);
+        List<TrackPosition> trackPoses = this.myCarTravels.subList(0, 1);
         if (posSize > 1) {
-            trackPoses = this.myCarTravels.subList(posSize - 2, posSize - 1);
+            trackPoses = this.myCarTravels.subList(posSize - 2, posSize);
         }
 
         double distanceMoved = this.getDistanceMoved(trackPoses);
@@ -111,7 +112,7 @@ public class World {
         TrackPieces currPiece = null;
         TrackPieces prevPiece = null;
         TrackPosition prevPosition = null;
-        System.out.println("Positions size: " + positions.size());
+
         for (TrackPosition position : positions) {
             double tempDistance = 0.0; // distance from one absolute position in
                                        // piece
