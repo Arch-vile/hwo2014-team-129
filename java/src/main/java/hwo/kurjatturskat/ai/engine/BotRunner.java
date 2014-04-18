@@ -128,10 +128,11 @@ public class BotRunner {
         System.out.println("Connecting to " + host + ":" + port + " as "
                 + botName + "/" + botKey + " @ " + track);
 
+        // Driver myBot = new ConstantThrottleBot(0.3);
+        Driver myBot = new SlowBot();
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
-                new MessageSender(socket), new SlowBot(), botName, botKey,
-                track);
+                new MessageSender(socket), myBot, botName, botKey, track);
 
         runner.run();
     }
