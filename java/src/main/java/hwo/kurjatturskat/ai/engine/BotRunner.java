@@ -7,6 +7,7 @@ import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
+import hwo.kurjatturskat.core.message.MessageType;
 import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
@@ -15,7 +16,6 @@ import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
 
-import java.io.IOException;
 import java.net.Socket;
 
 public class BotRunner {
@@ -38,11 +38,12 @@ public class BotRunner {
         this.world = new World();
     }
 
-    public void run() throws IOException {
+    public void run() throws Throwable {
         this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
 
         Message<?> message = null;
-        while ((message = this.receiver.waitForMessage()) != null) {
+        while ((message = this.receiver.waitForMessage()) != null
+                && !tournamentEnd(message)) {
 
             updateWorld(message);
 
@@ -55,8 +56,21 @@ public class BotRunner {
                     this.sender.sendMessage(new ThrottleMsg(throttle));
                 }
             }
-
         }
+
+        shutdown();
+
+    }
+
+    private void shutdown() throws Throwable {
+        System.out.println("Tournament end. Shutting down...");
+        receiver.shutdown();
+        sender.shutdown();
+
+    }
+
+    private boolean tournamentEnd(Message<?> message) {
+        return MessageType.tournamentEnd == message.getType();
     }
 
     private void updateWorld(Message<?> message) {
@@ -81,7 +95,7 @@ public class BotRunner {
         }
     }
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Throwable {
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);

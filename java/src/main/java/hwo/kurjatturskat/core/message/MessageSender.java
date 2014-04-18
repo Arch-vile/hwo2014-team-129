@@ -26,7 +26,12 @@ public class MessageSender {
 
     @Override
     protected void finalize() throws Throwable {
+        shutdown();
+    }
+
+    public void shutdown() throws Throwable {
         try {
+            System.out.println("Closing output socket");
             this.socket.close();
         } catch (Throwable t) {
             throw t;

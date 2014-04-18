@@ -54,6 +54,9 @@ public class MessageReceiver {
             case spawn:
                 return gson.fromJson(line, SpawnMsg.class);
 
+            case tournamentEnd:
+                return msg;
+
             default:
                 System.err.println("Unhandled message: " + line);
                 return new Message(MessageType.unknown);
@@ -66,13 +69,19 @@ public class MessageReceiver {
 
     @Override
     protected void finalize() throws Throwable {
+        shutdown();
+    }
+
+    public void shutdown() throws Throwable {
         try {
+            System.out.println("Closing input socket");
             this.socket.close();
         } catch (Throwable t) {
             throw t;
         } finally {
             super.finalize();
         }
+
     }
 
 }
