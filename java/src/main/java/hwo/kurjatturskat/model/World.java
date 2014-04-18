@@ -3,16 +3,27 @@ package hwo.kurjatturskat.model;
 import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+
+import java.util.ArrayList;
 
 public class World {
 
     private TrackModel trackModel;
     private CarIdentifier yourCar;
 
+    private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
+
     public void update(CarPositionsMsg msg) {
-        int yourPieceIndex = getYourPieceIndex(msg.getData());
-        trackModel.setCurrentPiece(yourPieceIndex);
+        PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
+                this.yourCar);
+        trackModel.setCurrentPiece(myPiecePos.pieceIndex);
+        TrackPosition trackPos = new TrackPosition(msg.gameTick,
+                myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
+                myPiecePos.lane);
+        this.myCarTravels.add(trackPos);
+
     }
 
     public void update(GameInitMsg message) {
@@ -23,14 +34,23 @@ public class World {
         this.yourCar = carId;
     }
 
-    private Integer getYourPieceIndex(CarPosition[] data) {
-        for (CarPosition pos : data) {
-            CarIdentifier id = pos.id;
-            if (this.yourCar.color.equals(id.color)) {
-                return pos.piecePosition.pieceIndex;
+    /**
+     * Retrieves the piecePosition for given car identifier from car position
+     * data.
+     * 
+     * @param data
+     * @param carId
+     * @return Null is returned if we have no position data for given car id.
+     */
+    private PiecePosition getPiecePositionForCar(CarPosition[] data,
+            CarIdentifier carId) {
+        for (CarPosition posData : data) {
+            CarIdentifier id = posData.id;
+            if (carId.color.equals(id.color)) {
+                return posData.piecePosition;
+
             }
         }
-
         System.err.println("Could not determine yourself from car positions!");
         return null;
     }
