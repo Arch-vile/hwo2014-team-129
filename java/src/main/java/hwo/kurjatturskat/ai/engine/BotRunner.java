@@ -4,7 +4,6 @@ import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.SlowBot;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.GameStartMsg;
-import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
@@ -12,6 +11,7 @@ import hwo.kurjatturskat.core.message.MessageType;
 import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
+import hwo.kurjatturskat.core.message.advanced.CreateRaceMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
@@ -26,23 +26,35 @@ public class BotRunner {
     private final Driver driver;
     private final String botName;
     private final String botKey;
+    private final String track;
     private String gameId;
 
     private World world;
 
     public BotRunner(MessageReceiver receiver, MessageSender sender,
-            Driver driver, String botName, String botKey) {
+            Driver driver, String botName, String botKey, String track) {
         this.receiver = receiver;
         this.sender = sender;
         this.driver = driver;
         this.botName = botName;
         this.botKey = botKey;
+        this.track = track;
         this.world = new World();
         this.gameId = "";
     }
 
     public void run() throws Throwable {
-        this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
+
+        this.sender.sendMessage(new CreateRaceMsg(this.botName, this.botKey,
+                this.track, "topsecret", 1));
+
+        // this.sender.sendMessage(new JoinRaceMsg(this.botName, this.botKey,
+        // this.track, "topsecret", 1));
+
+        // this.sender.sendMessage(new JoinRaceMsg("driver2", this.botKey,
+        // this.track, "topsecret", 1));
+
+        // this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
 
         Message<?> message = null;
         while ((message = this.receiver.waitForMessage()) != null
@@ -108,15 +120,19 @@ public class BotRunner {
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
         String botKey = args[3];
+        String track = "germany";
+        if (args.length == 5) {
+            track = args[4];
+        }
 
         System.out.println("Connecting to " + host + ":" + port + " as "
-                + botName + "/" + botKey);
+                + botName + "/" + botKey + " @ " + track);
 
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
-                new MessageSender(socket), new SlowBot(), botName, botKey);
+                new MessageSender(socket), new SlowBot(), botName, botKey,
+                track);
 
         runner.run();
     }
-
 }
