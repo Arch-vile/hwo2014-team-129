@@ -44,12 +44,14 @@ public class BotRunner {
 
             updateWorld(message);
 
-            String direction = this.driver.getLane(world);
-            if (direction != null) {
-                this.sender.sendMessage(new SwitchLaneMsg(direction));
-            } else {
-                Double throttle = this.driver.getThrottle(world);
-                this.sender.sendMessage(new ThrottleMsg(throttle));
+            if (world.isInitialized()) {
+                String direction = this.driver.getLane(world);
+                if (direction != null) {
+                    this.sender.sendMessage(new SwitchLaneMsg(direction));
+                } else {
+                    Double throttle = this.driver.getThrottle(world);
+                    this.sender.sendMessage(new ThrottleMsg(throttle));
+                }
             }
 
         }
@@ -64,7 +66,7 @@ public class BotRunner {
             this.world.update((GameInitMsg) message);
             break;
         case yourCar:
-            this.world.update((YourCarMsg) message);
+            this.world.setYourCarId(((YourCarMsg) message).getData());
         }
     }
 
