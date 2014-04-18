@@ -134,8 +134,8 @@ public class World {
         TrackPieces startPiece = this.trackModel
                 .getPieceForIndex(start.pieceIndex);
         if (startPiece.isCurve()) {
-            distance += (startPiece.angle / 360) * startPiece.radius
-                    - start.inPieceDistance;
+            distance += ((startPiece.angle / 360) * 2 * Math.PI)
+                    * startPiece.radius - start.inPieceDistance;
         } else {
             distance += startPiece.length - start.inPieceDistance;
         }
