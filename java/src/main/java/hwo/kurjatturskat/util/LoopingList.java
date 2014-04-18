@@ -38,4 +38,8 @@ public class LoopingList<T> {
         return index % this.items.size();
     }
 
+    public T getByIndex(int index) {
+        return this.items.get(this.normalize(index));
+    }
+
 }

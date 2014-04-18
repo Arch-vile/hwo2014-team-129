@@ -7,8 +7,10 @@ import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class World {
 
@@ -25,7 +27,18 @@ public class World {
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
                 myPiecePos.lane);
+
         this.myCarTravels.add(trackPos);
+
+        int posSize = this.myCarTravels.size();
+        List<TrackPosition> trackPoses = this.myCarTravels.subList(0, 0);
+        if (posSize > 1) {
+            trackPoses = this.myCarTravels.subList(posSize - 2, posSize - 1);
+        }
+
+        double distanceMoved = this.getDistanceMoved(trackPoses);
+        System.out.println("Distance moved (" + myPiecePos.pieceIndex + "): "
+                + distanceMoved);
 
     }
 
@@ -85,5 +98,46 @@ public class World {
             System.out.println("We are back on track!");
             this.onTrack = true;
         }
+    }
+
+    /**
+     * We return the distance moved we can gather from given track positions.
+     * 
+     * @param positions
+     * @return
+     */
+    public double getDistanceMoved(List<TrackPosition> positions) {
+        double distance = 0.0;
+        TrackPieces currPiece = null;
+        TrackPieces prevPiece = null;
+        TrackPosition prevPosition = null;
+        System.out.println("Positions size: " + positions.size());
+        for (TrackPosition position : positions) {
+            double tempDistance = 0.0; // distance from one absolute position in
+                                       // piece
+            currPiece = this.trackModel.getPieceForIndex(position.pieceIndex);
+            tempDistance += position.inPieceDistance;
+            if (prevPosition != null) {
+                if (!prevPiece.equals(currPiece)) {
+                    // add the end of the previous piece to distance traveled
+                    if (!prevPiece.isCurve()) {
+                        tempDistance += prevPiece.length
+                                - prevPosition.inPieceDistance;
+                    } else {
+                        // this should consider the lane
+                        tempDistance += (prevPiece.angle / 360)
+                                * prevPiece.radius
+                                - prevPosition.inPieceDistance;
+                    }
+                } else {
+                    tempDistance -= prevPosition.inPieceDistance;
+                }
+            }
+            prevPiece = currPiece;
+            prevPosition = position;
+            distance += tempDistance;
+        }
+
+        return distance;
     }
 }

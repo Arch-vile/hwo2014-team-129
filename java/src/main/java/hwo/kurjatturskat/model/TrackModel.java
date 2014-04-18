@@ -25,4 +25,8 @@ public class TrackModel {
         pieces.setCurrent(yourPieceIndex);
     }
 
+    public TrackPieces getPieceForIndex(int index) {
+        return this.pieces.getByIndex(index);
+    }
+
 }
