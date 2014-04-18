@@ -2,10 +2,12 @@ package hwo.kurjatturskat.ai.engine;
 
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.SlowBot;
+import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
+import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
@@ -67,6 +69,15 @@ public class BotRunner {
             break;
         case yourCar:
             this.world.setYourCarId(((YourCarMsg) message).getData());
+            break;
+        case crash:
+            this.world.setOffTrack((CrashMsg) message);
+            break;
+        case spawn:
+            this.world.setOnTrack((SpawnMsg) message);
+            break;
+        default:
+            break;
         }
     }
 

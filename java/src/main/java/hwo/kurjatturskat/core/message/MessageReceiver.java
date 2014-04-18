@@ -48,6 +48,12 @@ public class MessageReceiver {
             case gameInit:
                 return gson.fromJson(line, GameInitMsg.class);
 
+            case crash:
+                return gson.fromJson(line, CrashMsg.class);
+
+            case spawn:
+                return gson.fromJson(line, SpawnMsg.class);
+
             default:
                 System.err.println("Unhandled message: " + line);
                 return new Message(MessageType.unknown);
