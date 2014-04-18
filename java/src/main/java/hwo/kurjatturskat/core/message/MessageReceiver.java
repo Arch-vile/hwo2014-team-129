@@ -36,6 +36,7 @@ public class MessageReceiver {
                     : MessageType.unknown;
 
             switch (type) {
+
             case carPositions:
                 return gson.fromJson(line, CarPositionsMsg.class);
 
@@ -53,6 +54,9 @@ public class MessageReceiver {
 
             case spawn:
                 return gson.fromJson(line, SpawnMsg.class);
+
+            case gameStart:
+                return gson.fromJson(line, GameStartMsg.class);
 
             case tournamentEnd:
                 return msg;
