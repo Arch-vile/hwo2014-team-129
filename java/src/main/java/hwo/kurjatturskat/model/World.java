@@ -170,4 +170,8 @@ public class World {
         return previousPosition;
     }
 
+    public TrackLanes[] getLanes() {
+        return lanes;
+    }
+
 }
