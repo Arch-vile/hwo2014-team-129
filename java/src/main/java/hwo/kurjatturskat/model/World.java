@@ -158,7 +158,7 @@ public class World {
                 ourLaneOffset *= -1;
             }
 
-            distance += ((startPiece.angle / 360) * 2 * Math.PI)
+            distance += ((Math.abs(startPiece.angle) / 360) * 2 * Math.PI)
                     * (startPiece.radius - ourLaneOffset)
                     - start.inPieceDistance;
         } else {
