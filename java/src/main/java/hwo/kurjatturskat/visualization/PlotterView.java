@@ -4,6 +4,7 @@ import hwo.kurjatturskat.model.World;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -12,7 +13,10 @@ import org.la4j.vector.Vector;
 
 public class PlotterView extends JFrame {
 
+    private Graphics bufferGraphics;
+    private Image offscreen;
     private Draw draw;
+    private Dimension screenDimension = new Dimension(900, 900);
 
     public PlotterView(World world) {
         List<TrackElement> pieces = TrackElement.convert(world.getTrackModel()
@@ -20,10 +24,33 @@ public class PlotterView extends JFrame {
         positionTrackElements(pieces);
         this.draw = new Draw(pieces, world);
 
-        this.setPreferredSize(new Dimension(900, 900));
+        this.setPreferredSize(screenDimension);
         this.pack();
         this.setVisible(true);
+        offscreen = createImage(screenDimension.width, screenDimension.height);
+        bufferGraphics = offscreen.getGraphics();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        if (bufferGraphics != null) {
+            bufferGraphics.clearRect(0, 0, screenDimension.width,
+                    screenDimension.width);
+            this.draw.paint(bufferGraphics);
+            g.drawImage(offscreen, 0, 0, this);
+        }
+
+    }
+
+    @Override
+    public void update(Graphics g) {
+        paint(g);
+    }
+
+    public void plot() {
+        this.repaint();
     }
 
     private void positionTrackElements(List<TrackElement> pieces) {
@@ -145,16 +172,6 @@ public class PlotterView extends JFrame {
 
         }
 
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        this.draw.paint(g);
-    }
-
-    public void plot() {
-        this.repaint();
     }
 
     // private DoublePoint appendCurve(DoublePoint currentPos,

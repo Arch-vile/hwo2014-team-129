@@ -67,7 +67,6 @@ public class Draw {
     }
 
     private void drawMarker(Vector point, Graphics g) {
-        g.setColor(Color.red);
         drawMarker(point.get(0), point.get(1), g);
     }
 
@@ -84,7 +83,7 @@ public class Draw {
     }
 
     private void drawLine(double x1, double y1, double x2, double y2, Graphics g) {
-
+        g.setColor(Color.BLACK);
         g.drawLine(adjustX(x1), adjustY(y1), adjustX(x2), adjustY(y2));
     }
 
