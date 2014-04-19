@@ -1,5 +1,7 @@
 package hwo.kurjatturskat.visualization;
 
+import hwo.kurjatturskat.model.World;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
@@ -12,10 +14,12 @@ public class Draw {
     private final int OFFSET_Y = 300;
     private final double SCALE = 0.5;
 
-    List<TrackElement> pieces;
+    private List<TrackElement> pieces;
+    private World world;
 
-    public Draw(List<TrackElement> pieces) {
+    public Draw(List<TrackElement> pieces, World world) {
         this.pieces = pieces;
+        this.world = world;
     }
 
     public void paint(Graphics g) {
@@ -35,6 +39,8 @@ public class Draw {
 
             lineIndex++;
         }
+
+        plotCar(g);
 
     }
 
@@ -58,6 +64,11 @@ public class Draw {
     private void drawMarker(double x, double y, Graphics g) {
         g.setColor(Color.red);
         g.fillOval(adjustX(x), adjustY(y), 6, 6);
+    }
+
+    private void drawMarker(Vector point, Graphics g) {
+        g.setColor(Color.red);
+        drawMarker(point.get(0), point.get(1), g);
     }
 
     private void drawLine(Vector currentPlot, Vector nextPlot, Graphics g) {
@@ -84,4 +95,39 @@ public class Draw {
     private int adjustY(double x) {
         return (int) ((x + OFFSET_Y) * SCALE);
     }
+
+    public void plotCar(Graphics g) {
+        int pieceIndex = this.world.getPreviousPosition().pieceIndex;
+        double distance = this.world.getPreviousPosition().inPieceDistance;
+        TrackElement trackElement = pieces.get(pieceIndex);
+        if (trackElement.isCurve()) {
+            plotCarOnCurve((Curve) trackElement, distance, g);
+        }
+
+        if (trackElement.isStraight()) {
+            plotCarOnStraight((Straight) trackElement, distance, g);
+        }
+    }
+
+    private void plotCarOnStraight(Straight current, double distance, Graphics g) {
+        Vector straightStart = current.getPosition();
+        Vector direction = current.getDirection();
+        Vector carPosition = straightStart.add(direction.normalize().multiply(
+                distance));
+        drawMarker(carPosition, g);
+    }
+
+    private void plotCarOnCurve(Curve current, double distance, Graphics g) {
+
+        double wholeCircle = 2 * Math.PI * current.getRadius();
+        double travelledPercentage = distance / wholeCircle;
+        double travelledAngle = travelledPercentage * current.getAngle();
+
+        Vector trackStart = current.getRelativeStartPoint();
+        Vector carRelativePos = VectorMath.rotate(trackStart, travelledAngle);
+        Vector carPosition = current.getPosition().add(carRelativePos);
+        drawMarker(carPosition, g);
+
+    }
+
 }

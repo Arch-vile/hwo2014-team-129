@@ -165,4 +165,9 @@ public class World {
 
         return distance;
     }
+
+    public TrackPosition getPreviousPosition() {
+        return previousPosition;
+    }
+
 }

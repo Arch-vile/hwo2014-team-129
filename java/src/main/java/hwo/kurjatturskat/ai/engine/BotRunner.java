@@ -64,6 +64,7 @@ public class BotRunner {
                 && !tournamentEnd(message)) {
 
             updateWorld(message);
+            plotter.plot();
 
             if (world.isInitialized()) {
                 String direction = this.driver.getLane(world);

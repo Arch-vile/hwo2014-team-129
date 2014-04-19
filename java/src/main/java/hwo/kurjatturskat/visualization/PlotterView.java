@@ -18,7 +18,7 @@ public class PlotterView extends JFrame {
         List<TrackElement> pieces = TrackElement.convert(world.getTrackModel()
                 .getAll());
         positionTrackElements(pieces);
-        this.draw = new Draw(pieces);
+        this.draw = new Draw(pieces, world);
 
         this.setPreferredSize(new Dimension(900, 900));
         this.pack();
@@ -151,6 +151,10 @@ public class PlotterView extends JFrame {
     public void paint(Graphics g) {
         super.paint(g);
         this.draw.paint(g);
+    }
+
+    public void plot() {
+        this.repaint();
     }
 
     // private DoublePoint appendCurve(DoublePoint currentPos,
