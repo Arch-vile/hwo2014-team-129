@@ -4,6 +4,7 @@ import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.util.LoopingList;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class TrackModel {
 
@@ -29,4 +30,7 @@ public class TrackModel {
         return this.pieces.getByIndex(index);
     }
 
+    public List<TrackPieces> getAll() {
+        return pieces.getAll();
+    }
 }

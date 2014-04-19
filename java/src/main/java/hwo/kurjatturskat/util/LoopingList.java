@@ -42,4 +42,8 @@ public class LoopingList<T> {
         return this.items.get(this.normalize(index));
     }
 
+    public List<T> getAll() {
+        return this.items;
+    }
+
 }
