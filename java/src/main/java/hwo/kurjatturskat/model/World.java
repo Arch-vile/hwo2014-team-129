@@ -18,6 +18,7 @@ public class World {
     private CarIdentifier yourCar;
     private double recordSpeed = 0;
     private boolean onTrack;
+    private double speed;
 
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
@@ -37,12 +38,11 @@ public class World {
 
         // this.myCarTravels.add(trackPos);
 
-        double speed = 0.0;
-
         if (this.previousPosition != null) {
             this.distanceTraveled += this.getDistance(this.previousPosition,
                     trackPos);
-            speed = this.getSpeed(this.previousPosition, trackPos);
+
+            this.speed = this.getSpeed(this.previousPosition, trackPos);
 
             if (speed > this.recordSpeed) {
                 this.recordSpeed = speed;
@@ -54,7 +54,10 @@ public class World {
         this.previousPosition = trackPos;
         // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
         // + this.distanceTraveled + "): " + speed);
+    }
 
+    public double getMySpeed() {
+        return this.speed;
     }
 
     public void update(GameInitMsg message) {
@@ -165,7 +168,7 @@ public class World {
                 ourLaneOffset *= -1;
             }
 
-            distance += ((startPiece.angle / 360) * 2 * Math.PI)
+            distance += ((Math.abs(startPiece.angle) / 360) * 2 * Math.PI)
                     * (startPiece.radius - ourLaneOffset)
                     - start.inPieceDistance;
         } else {
@@ -178,6 +181,20 @@ public class World {
 
     public TrackPosition getPreviousPosition() {
         return previousPosition;
+    }
+
+    public TrackLanes[] getLanes() {
+        return lanes;
+    }
+
+    public TrackLanes getMyLane() {
+        for (TrackLanes lane : getLanes()) {
+            if (lane.id == getPreviousPosition().lane.startLaneIndex) {
+                return lane;
+            }
+        }
+
+        return null;
     }
 
 }
