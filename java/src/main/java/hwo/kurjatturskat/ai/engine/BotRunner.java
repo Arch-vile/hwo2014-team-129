@@ -16,7 +16,9 @@ import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
+import hwo.kurjatturskat.visualization.PlotterView;
 
+import java.io.IOException;
 import java.net.Socket;
 
 public class BotRunner {
@@ -45,8 +47,8 @@ public class BotRunner {
 
     public void run() throws Throwable {
 
-        this.sender.sendMessage(new CreateRaceMsg(this.botName, this.botKey,
-                this.track, "topsecret", 1));
+        initializeSequence();
+        PlotterView plotter = new PlotterView(world);
 
         // this.sender.sendMessage(new JoinRaceMsg(this.botName, this.botKey,
         // this.track, "topsecret", 1));
@@ -57,6 +59,7 @@ public class BotRunner {
         // this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
 
         Message<?> message = null;
+
         while ((message = this.receiver.waitForMessage()) != null
                 && !tournamentEnd(message)) {
 
@@ -75,6 +78,35 @@ public class BotRunner {
 
         shutdown();
 
+    }
+
+    private void initializeSequence() throws IOException {
+        this.sender.sendMessage(new CreateRaceMsg(this.botName, this.botKey,
+                this.track, "topsecret", 1));
+
+        YourCarMsg yourCarMsg = (YourCarMsg) waitForMsg(MessageType.yourCar);
+        updateWorld(yourCarMsg);
+
+        GameInitMsg gameInitMsg = (GameInitMsg) waitForMsg(MessageType.gameInit);
+        updateWorld(gameInitMsg);
+
+    }
+
+    private Message waitForMsg(MessageType type) throws IOException {
+        Message<?> message = null;
+        while ((message = this.receiver.waitForMessage()) != null) {
+            if (message.getType() != type) {
+                System.err.println(String.format(
+                        "Waited for %s message but got: %s", type,
+                        message.getType()));
+            } else {
+                System.out.println(String.format(
+                        "Successfully received the %s ", type));
+                return message;
+            }
+        }
+
+        return null;
     }
 
     private void shutdown() throws Throwable {
