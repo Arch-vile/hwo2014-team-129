@@ -85,7 +85,9 @@ public class Draw {
 
     private void drawMarker(double x, double y, Graphics g) {
         g.setColor(Color.red);
-        g.fillOval(adjustX(x), adjustY(y), 6, 6);
+
+        int width = 6;
+        g.fillOval(adjustX(x) - width / 2, adjustY(y) - width / 2, width, width);
     }
 
     private void drawMarker(Vector point, Graphics g) {
