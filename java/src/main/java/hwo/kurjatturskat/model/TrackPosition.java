@@ -1,6 +1,7 @@
 package hwo.kurjatturskat.model;
 
 import hwo.kurjatturskat.core.message.carpositions.Lane;
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 
 /**
  * Tells in which track position we were in given game tick.
@@ -16,11 +17,19 @@ public class TrackPosition {
 
     public final Lane lane;
 
+    private final TrackPieces trackPiece;
+
     public TrackPosition(int gameTick, int pieceIndex, double inPieceDistance,
-            Lane lane) {
+            Lane lane, TrackPieces trackPiece) {
         this.gameTick = gameTick;
         this.pieceIndex = pieceIndex;
         this.inPieceDistance = inPieceDistance;
         this.lane = lane;
+        this.trackPiece = trackPiece;
     }
+
+    public TrackPieces getTrackPiece() {
+        return trackPiece;
+    }
+
 }

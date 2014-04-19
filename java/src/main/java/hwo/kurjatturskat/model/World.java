@@ -8,7 +8,7 @@ import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
-import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+import hwo.kurjatturskat.util.TrackUtils;
 
 import java.util.ArrayList;
 
@@ -26,22 +26,17 @@ public class World {
 
     private TrackLanes[] lanes;
 
-    private double distanceTraveled = 0.0;
-
     public void update(CarPositionsMsg msg) {
         PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
                 this.yourCar);
         trackModel.setCurrentPiece(myPiecePos.pieceIndex);
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
-                myPiecePos.lane);
+                myPiecePos.lane, trackModel.getCurrent());
 
         // this.myCarTravels.add(trackPos);
 
         if (this.previousPosition != null) {
-            this.distanceTraveled += this.getDistance(this.previousPosition,
-                    trackPos);
-
             this.speed = this.getSpeed(this.previousPosition, trackPos);
 
             if (speed > this.recordSpeed) {
@@ -135,52 +130,19 @@ public class World {
     public double getSpeed(TrackPosition start, TrackPosition end) {
         int startTime = start.gameTick;
         int endTime = end.gameTick;
+        TrackLanes startLane = getLane(start.lane.endLaneIndex);
 
-        double distance = this.getDistance(start, end);
-
+        double distance = TrackUtils.getDistance(start, end, startLane);
         return distance / (endTime - startTime);
     }
 
-    /**
-     * Tells distance between two following track positions.
-     * 
-     * @param start
-     * @param end
-     * @return
-     */
-    public double getDistance(TrackPosition start, TrackPosition end) {
-        if (start == null) {
-            return end.inPieceDistance;
-        }
-        if (start.pieceIndex == end.pieceIndex) {
-            return end.inPieceDistance - start.inPieceDistance;
-        }
-        double distance = 0.0;
-        TrackPieces startPiece = this.trackModel
-                .getPieceForIndex(start.pieceIndex);
-        if (startPiece.isCurve()) {
-            // handle lane distance
-            double correctedRadius = startPiece.radius;
-            double ourLaneOffset = 0.0;
-            for (TrackLanes lane : this.lanes) {
-                if (start.lane.endLaneIndex == lane.id) {
-                    ourLaneOffset = lane.distanceFromCenter;
-                    break;
-                }
+    public TrackLanes getLane(int index) {
+        for (TrackLanes lane : this.lanes) {
+            if (index == lane.id) {
+                return lane;
             }
-            if (startPiece.angle < 0) {
-                ourLaneOffset *= -1;
-            }
-
-            distance += ((Math.abs(startPiece.angle) / 360) * 2 * Math.PI)
-                    * (startPiece.radius - ourLaneOffset)
-                    - start.inPieceDistance;
-        } else {
-            distance += startPiece.length - start.inPieceDistance;
         }
-        distance += end.inPieceDistance;
-
-        return distance;
+        return null;
     }
 
     public TrackPosition getPreviousPosition() {
