@@ -126,20 +126,31 @@ public class Draw {
 
     private void plotCarOnStraight(Straight current, double distance, Graphics g) {
         Vector straightStart = current.getPosition();
+
+        Vector offSet = VectorMath.rotate(current.getDirection(), 90)
+                .normalize().multiply(world.getMyLane().distanceFromCenter);
+
         Vector direction = current.getDirection();
-        Vector carPosition = straightStart.add(direction.normalize().multiply(
-                distance));
+        Vector carPosition = straightStart.add(offSet).add(
+                direction.normalize().multiply(distance));
         drawMarker(carPosition, g);
     }
 
     private void plotCarOnCurve(Curve current, double distance, Graphics g) {
-        double wholeCircle = 2 * Math.PI * current.getRadius();
+        double laneDistanceFromCenter = world.getMyLane().distanceFromCenter;
+
+        if (current.getAngle() < 0)
+            laneDistanceFromCenter *= -1;
+
+        double wholeCircle = 2 * Math.PI
+                * (current.getRadius() - laneDistanceFromCenter);
         double travelledPercentage = distance / wholeCircle;
         double travelledAngle = travelledPercentage * 360;
         if (current.getAngle() < 0)
             travelledAngle *= -1;
 
-        Vector trackStart = current.getRelativeStartPoint();
+        Vector trackStart = current.getRelativeStartPoint().normalize()
+                .multiply(current.getRadius() - laneDistanceFromCenter);
         Vector carRelativePos = VectorMath.rotate(trackStart, travelledAngle);
         Vector carPosition = current.getPosition().add(carRelativePos);
         drawMarker(carPosition, g);

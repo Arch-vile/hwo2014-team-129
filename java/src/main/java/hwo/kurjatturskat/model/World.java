@@ -44,8 +44,8 @@ public class World {
             speed = this.getSpeed(this.previousPosition, trackPos);
         }
         this.previousPosition = trackPos;
-        System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
-                + this.distanceTraveled + "): " + speed);
+        // ystem.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
+        // + this.distanceTraveled + "): " + speed);
 
     }
 
@@ -172,6 +172,17 @@ public class World {
 
     public TrackLanes[] getLanes() {
         return lanes;
+    }
+
+    public TrackLanes getMyLane() {
+        for (TrackLanes lane : getLanes()) {
+            if (lane.id == getPreviousPosition().lane.startLaneIndex) {
+                System.out.println(lane.distanceFromCenter);
+                return lane;
+            }
+        }
+
+        return null;
     }
 
 }
