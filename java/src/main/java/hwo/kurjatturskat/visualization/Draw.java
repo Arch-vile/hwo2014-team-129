@@ -117,16 +117,15 @@ public class Draw {
     }
 
     private void plotCarOnCurve(Curve current, double distance, Graphics g) {
-
         double wholeCircle = 2 * Math.PI * current.getRadius();
         double travelledPercentage = distance / wholeCircle;
-        double travelledAngle = travelledPercentage * current.getAngle();
+        double travelledAngle = travelledPercentage * 360;
+        if (current.getAngle() < 0)
+            travelledAngle *= -1;
 
         Vector trackStart = current.getRelativeStartPoint();
         Vector carRelativePos = VectorMath.rotate(trackStart, travelledAngle);
         Vector carPosition = current.getPosition().add(carRelativePos);
         drawMarker(carPosition, g);
-
     }
-
 }
