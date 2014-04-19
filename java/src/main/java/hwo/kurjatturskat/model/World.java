@@ -16,6 +16,7 @@ public class World {
 
     private TrackModel trackModel;
     private CarIdentifier yourCar;
+    private double recordSpeed = 0;
     private boolean onTrack;
 
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
@@ -42,15 +43,24 @@ public class World {
             this.distanceTraveled += this.getDistance(this.previousPosition,
                     trackPos);
             speed = this.getSpeed(this.previousPosition, trackPos);
+
+            if (speed > this.recordSpeed) {
+                this.recordSpeed = speed;
+                if (this.recordSpeed > 8) {
+                    System.out.println("New recordSpeed: " + this.recordSpeed);
+                }
+            }
         }
         this.previousPosition = trackPos;
-        System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
-                + this.distanceTraveled + "): " + speed);
+        // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
+        // + this.distanceTraveled + "): " + speed);
 
     }
 
     public void update(GameInitMsg message) {
-        this.trackModel = new TrackModel(message.getData().race.track.pieces);
+        this.trackModel = new TrackModel(message.getData().race.track.pieces,
+                message.getData().race.track.id,
+                message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
     }
 
