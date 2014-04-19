@@ -59,6 +59,10 @@ public class Draw {
         g.setColor(Color.GREEN);
         g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
                 maxPlottedYCoord + 50);
+        g.drawString(
+                String.format("Record speed: %s", world.getMyRecordSpeed()),
+                20, maxPlottedYCoord + 70);
+
     }
 
     private void drawCurve(Curve element, Graphics g) {

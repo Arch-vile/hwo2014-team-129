@@ -46,14 +46,18 @@ public class World {
 
             if (speed > this.recordSpeed) {
                 this.recordSpeed = speed;
-                if (this.recordSpeed > 8) {
-                    System.out.println("New recordSpeed: " + this.recordSpeed);
-                }
+                // if (this.recordSpeed > 8) {
+                // System.out.println("New recordSpeed: " + this.recordSpeed);
+                // }
             }
         }
         this.previousPosition = trackPos;
         // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
         // + this.distanceTraveled + "): " + speed);
+    }
+
+    public double getMyRecordSpeed() {
+        return this.recordSpeed;
     }
 
     public double getMySpeed() {
