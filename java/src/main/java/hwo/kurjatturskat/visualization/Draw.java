@@ -12,9 +12,11 @@ import org.la4j.vector.Vector;
 
 public class Draw {
 
-    private final int OFFSET_X = 300;
-    private final int OFFSET_Y = 400;
-    private final double SCALE = 1;
+    private int OFFSET_X = 10;
+    private int OFFSET_Y = 10;
+    private double SCALE = 0.5;
+
+    private int maxPlottedYCoord = 0;
 
     List<TrackLanes> lanes;
     private List<TrackElement> pieces;
@@ -46,6 +48,17 @@ public class Draw {
 
         plotCar(g);
 
+        plotSpeed(g);
+
+    }
+
+    public void plotSpeed(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(15, maxPlottedYCoord + 30, 300, 100);
+
+        g.setColor(Color.GREEN);
+        g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
+                maxPlottedYCoord + 50);
     }
 
     private void drawCurve(Curve element, Graphics g) {
@@ -99,16 +112,37 @@ public class Draw {
     }
 
     private void drawLine(double x1, double y1, double x2, double y2, Graphics g) {
+        int adjustX1 = adjustX(x1);
+        int adjustY1 = adjustY(y1);
+        int adjustX2 = adjustX(x2);
+        int adjustY2 = adjustY(y2);
+
         g.setColor(Color.BLACK);
-        g.drawLine(adjustX(x1), adjustY(y1), adjustX(x2), adjustY(y2));
+        g.drawLine(adjustX1, adjustY1, adjustX2, adjustY2);
     }
 
     private int adjustX(double x) {
-        return (int) ((x + OFFSET_X) * SCALE);
+        int adjusted = (int) ((x + OFFSET_X) * SCALE);
+
+        if (adjusted < 30) {
+            OFFSET_X++;
+        }
+
+        return adjusted;
     }
 
     private int adjustY(double x) {
-        return (int) ((x + OFFSET_Y) * SCALE);
+        int adjusted = (int) ((x + OFFSET_Y) * SCALE);
+
+        if (adjusted < 80) {
+            OFFSET_Y++;
+        }
+
+        if (adjusted > maxPlottedYCoord) {
+            maxPlottedYCoord = adjusted;
+        }
+
+        return adjusted;
     }
 
     public void plotCar(Graphics g) {
