@@ -12,6 +12,9 @@ import org.la4j.vector.Vector;
 
 public class Draw {
 
+    private final static Color LANE_COLOR = Color.BLACK;
+    private final static Color SWITCH_COLOR = Color.RED;
+
     private int OFFSET_X = 10;
     private int OFFSET_Y = 10;
     private double SCALE = 0.5;
@@ -33,16 +36,8 @@ public class Draw {
         int lineIndex = 0;
 
         for (TrackElement element : pieces) {
-
-            g.drawString("" + lineIndex, adjustX(element.getPosition().get(0)),
-                    adjustY(element.getPosition().get(1)));
-
-            if (TrackElement.TYPE_STRAIGHT.equals(element.getType())) {
-                drawStraight((Straight) element, g);
-            } else {
-                drawCurve((Curve) element, g);
-            }
-
+            plotTrackPieceIndex(g, lineIndex, element);
+            plotTrackPiece(g, element);
             lineIndex++;
         }
 
@@ -50,6 +45,26 @@ public class Draw {
 
         plotSpeed(g);
 
+    }
+
+    public void plotTrackPiece(Graphics g, TrackElement element) {
+
+        g.setColor(LANE_COLOR);
+        if (element.getTrackPiece().isSwitch) {
+            g.setColor(SWITCH_COLOR);
+        }
+
+        if (TrackElement.TYPE_STRAIGHT.equals(element.getType())) {
+            drawStraight((Straight) element, g);
+        } else {
+            drawCurve((Curve) element, g);
+        }
+    }
+
+    public void plotTrackPieceIndex(Graphics g, int lineIndex,
+            TrackElement element) {
+        g.drawString("" + lineIndex, adjustX(element.getPosition().get(0)),
+                adjustY(element.getPosition().get(1)));
     }
 
     public void plotSpeed(Graphics g) {
@@ -66,8 +81,6 @@ public class Draw {
     }
 
     private void drawCurve(Curve element, Graphics g) {
-
-        g.setColor(Color.BLACK);
 
         double right = 1;
         if (element.getAngle() < 0)
@@ -107,8 +120,6 @@ public class Draw {
     }
 
     private void drawStraight(Straight straight, Graphics g) {
-
-        g.setColor(Color.BLACK);
 
         for (TrackLanes lane : this.lanes) {
 
