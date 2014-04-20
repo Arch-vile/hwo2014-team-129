@@ -32,12 +32,16 @@ public class World {
     private TrackLanes[] lanes;
 
     public void update(CarPositionsMsg msg) {
-        PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
+        CarPosition myCarPosition = this.getCarPositionForCar(msg.getData(),
                 this.myCar);
+        if (myCarPosition == null) {
+            return;
+        }
+        PiecePosition myPiecePos = myCarPosition.piecePosition;
         trackModel.setCurrentPiece(myPiecePos.pieceIndex);
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
-                myPiecePos.lane, trackModel.getCurrent());
+                myPiecePos.lane, trackModel.getCurrent(), myCarPosition.angle);
 
         // this.myCarTravels.add(trackPos);
 
@@ -101,6 +105,25 @@ public class World {
     }
 
     /**
+     * Retrieve the car position for given car.
+     * 
+     * @param data
+     * @param carId
+     * @return
+     */
+    private CarPosition getCarPositionForCar(CarPosition[] data,
+            CarIdentifier carId) {
+        for (CarPosition posData : data) {
+            CarIdentifier id = posData.id;
+            if (carId.color.equals(id.color)) {
+                return posData;
+            }
+        }
+        System.err.println("Could not determine yourself from car positions!");
+        return null;
+    }
+
+    /**
      * Retrieves the piecePosition for given car identifier from car position
      * data.
      * 
@@ -110,15 +133,8 @@ public class World {
      */
     private PiecePosition getPiecePositionForCar(CarPosition[] data,
             CarIdentifier carId) {
-        for (CarPosition posData : data) {
-            CarIdentifier id = posData.id;
-            if (carId.color.equals(id.color)) {
-                return posData.piecePosition;
-
-            }
-        }
-        System.err.println("Could not determine yourself from car positions!");
-        return null;
+        CarPosition position = this.getCarPositionForCar(data, carId);
+        return position.piecePosition;
     }
 
     public TrackModel getTrackModel() {

@@ -19,13 +19,16 @@ public class TrackPosition {
 
     private final TrackPieces trackPiece;
 
+    public final double carAngle;
+
     public TrackPosition(int gameTick, int pieceIndex, double inPieceDistance,
-            Lane lane, TrackPieces trackPiece) {
+            Lane lane, TrackPieces trackPiece, double carAngle) {
         this.gameTick = gameTick;
         this.pieceIndex = pieceIndex;
         this.inPieceDistance = inPieceDistance;
         this.lane = lane;
         this.trackPiece = trackPiece;
+        this.carAngle = carAngle;
     }
 
     public TrackPieces getTrackPiece() {
