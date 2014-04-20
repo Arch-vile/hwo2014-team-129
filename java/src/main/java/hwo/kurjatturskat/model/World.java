@@ -75,6 +75,7 @@ public class World {
 
     public void update(GameInitMsg message) {
         this.trackModel = new TrackModel(message.getData().race.track.pieces,
+                message.getData().race.track.lanes,
                 message.getData().race.raceSession,
                 message.getData().race.track.id,
                 message.getData().race.track.name);
@@ -179,7 +180,7 @@ public class World {
 
     public TrackLanes getLane(int index) {
         for (TrackLanes lane : this.lanes) {
-            if (index == lane.id) {
+            if (index == lane.index) {
                 return lane;
             }
         }
@@ -196,7 +197,7 @@ public class World {
 
     public TrackLanes getMyLane() {
         for (TrackLanes lane : getLanes()) {
-            if (lane.id == getPreviousPosition().lane.startLaneIndex) {
+            if (lane.index == getPreviousPosition().lane.startLaneIndex) {
                 return lane;
             }
         }

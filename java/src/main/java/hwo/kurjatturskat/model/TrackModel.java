@@ -1,6 +1,7 @@
 package hwo.kurjatturskat.model;
 
 import hwo.kurjatturskat.core.message.gameinit.RaceSession;
+import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.util.LoopingList;
 
@@ -10,13 +11,15 @@ import java.util.List;
 public class TrackModel {
 
     private LoopingList<TrackPieces> pieces;
+    private TrackLanes[] lanes;
     private RaceSession raceSession;
     private String trackId = "";
     private String trackName = "";
 
-    public TrackModel(TrackPieces pieces[], RaceSession raceSession,
-            String trackId, String trackName) {
+    public TrackModel(TrackPieces pieces[], TrackLanes lanes[],
+            RaceSession raceSession, String trackId, String trackName) {
         this.pieces = new LoopingList<>(Arrays.asList(pieces));
+        this.lanes = lanes;
         this.raceSession = raceSession;
         this.trackId = trackId;
         this.trackName = trackName;
@@ -72,4 +75,66 @@ public class TrackModel {
         return index % this.pieces.getAll().size();
     }
 
+    public TrackLanes getLane(int index) {
+        for (TrackLanes lane : this.lanes) {
+            if (index == lane.index) {
+                return lane;
+            }
+        }
+        return null;
+    }
+
+    public TrackLanes getLaneForIndex(int laneIndex) {
+        for (int i = 0; i < this.lanes.length; i++) {
+            if (this.lanes[i].index == laneIndex) {
+                return this.lanes[i];
+            }
+        }
+        return null;
+    }
+
+    public double getLaneLengthOnPiece(int pieceIndex, int laneIndex) {
+
+        double distance = 0.0;
+        TrackPieces piece = this.getPieceForIndex(pieceIndex);
+        TrackLanes lane = this.getLaneForIndex(laneIndex);
+
+        if (piece.isCurve()) {
+            double ourLaneOffset = 0.0;
+            ourLaneOffset = lane.distanceFromCenter;
+            if (piece.angle < 0) {
+                ourLaneOffset *= -1;
+            }
+
+            distance += ((Math.abs(piece.angle) / 360) * 2 * Math.PI)
+                    * (piece.radius - ourLaneOffset);
+        } else {
+            distance += piece.length;
+        }
+
+        return distance;
+    }
+
+    /*
+     * Get distance between to pieces, excluding end pieces.
+     */
+
+    public double getLaneDistanceBetweenPieces(int startPieceIndex,
+            int endPieceIndex, int laneIndex) {
+
+        int endIndex = endPieceIndex;
+
+        if (endPieceIndex < startPieceIndex) {
+            System.out.println(endIndex + " " + this.pieces.getAll().size());
+            endIndex += (this.pieces.getAll().size());
+            System.out.println(endIndex);
+        }
+        double distance = 0.0;
+        for (int i = startPieceIndex + 1; i < endIndex; i++) {
+            distance += getLaneLengthOnPiece(i % this.pieces.getAll().size(),
+                    laneIndex);
+        }
+
+        return distance;
+    }
 }
