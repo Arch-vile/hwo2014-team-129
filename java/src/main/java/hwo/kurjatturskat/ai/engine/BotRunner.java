@@ -13,6 +13,7 @@ import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.advanced.CreateRaceMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
@@ -61,7 +62,8 @@ public class BotRunner {
         Message<?> message = null;
 
         boolean switchSent = false;
-        int sswitch = world.getTrackModel().getNextSwitch();
+        TrackPieces nextLaneSelectionPoint = world.getTrackModel()
+                .getNextSwitch();
         while ((message = this.receiver.waitForMessage()) != null
                 && !tournamentEnd(message)) {
 
@@ -74,9 +76,11 @@ public class BotRunner {
                     if (!switchSent) {
                         this.sender.sendMessage(new SwitchLaneMsg(direction));
                         switchSent = true;
-                    } else if (sswitch != world.getTrackModel().getNextSwitch()) {
+                    } else if (!nextLaneSelectionPoint.equals(world
+                            .getTrackModel().getNextSwitch())) {
                         switchSent = false;
-                        sswitch = world.getTrackModel().getNextSwitch();
+                        nextLaneSelectionPoint = world.getTrackModel()
+                                .getNextSwitch();
                     }
                 }
 

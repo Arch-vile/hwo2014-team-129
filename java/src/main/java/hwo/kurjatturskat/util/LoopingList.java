@@ -1,7 +1,16 @@
 package hwo.kurjatturskat.util;
 
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+
 import java.util.List;
 
+/**
+ * NOTE: Not thread safe!
+ * 
+ * @author rapsu
+ * 
+ * @param <T>
+ */
 public class LoopingList<T> {
 
     private int index;
@@ -19,6 +28,11 @@ public class LoopingList<T> {
     public T setCurrent(int index) {
         this.index = normalize(index);
         return getCurrent();
+    }
+
+    public T setCurrent(T current) {
+        int newIndex = this.items.indexOf(current);
+        return setCurrent(newIndex);
     }
 
     public T getNext() {
@@ -49,4 +63,9 @@ public class LoopingList<T> {
     public int getCurrentIndex() {
         return this.index;
     }
+
+    public int getIndex(TrackPieces piece) {
+        return this.items.indexOf(piece);
+    }
+
 }

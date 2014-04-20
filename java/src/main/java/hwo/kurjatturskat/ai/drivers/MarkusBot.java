@@ -1,6 +1,7 @@
 package hwo.kurjatturskat.ai.drivers;
 
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.model.World;
 
 public class MarkusBot implements Driver {
@@ -32,8 +33,9 @@ public class MarkusBot implements Driver {
         // return 0;
         // }
         // }
-        int nSwitch = world.getTrackModel().getNextSwitch();
-        int nnSwitch = world.getTrackModel().getNextSwitchByIndex(nSwitch);
+        TrackPieces nSwitch = world.getTrackModel().getNextSwitch();
+        TrackPieces nnSwitch = world.getTrackModel().getNextSwitchByIndex(
+                nSwitch);
 
         if (world.getTrackModel().getCurrent().isCurve()) {
             if (lastThrottle != 0.2) {
@@ -74,8 +76,9 @@ public class MarkusBot implements Driver {
 
     @Override
     public String getLane(World world) {
-        int nSwitch = world.getTrackModel().getNextSwitch();
-        int nnSwitch = world.getTrackModel().getNextSwitchByIndex(nSwitch);
+        TrackPieces nSwitch = world.getTrackModel().getNextSwitch();
+        TrackPieces nnSwitch = world.getTrackModel().getNextSwitchByIndex(
+                nSwitch);
 
         TrackLanes myLane = world.getMyLane();
         double myLength = world.getTrackModel().getLaneDistanceBetweenPieces(

@@ -16,7 +16,7 @@ public class TrackModel {
     private RaceSession raceSession;
     private String trackId = "";
     private String trackName = "";
-    private int myCurrentTrackPiece = 0;
+    private TrackPieces myCurrentTrackPiece;
 
     public TrackModel(TrackPieces pieces[], TrackLanes lanes[],
             RaceSession raceSession, String trackId, String trackName) {
@@ -29,18 +29,23 @@ public class TrackModel {
         this.raceSession = raceSession;
         this.trackId = trackId;
         this.trackName = trackName;
+        this.myCurrentTrackPiece = pieces[0];
     }
 
     public TrackPieces getCurrent() {
-        return pieces.getByIndex(myCurrentTrackPiece);
+        return myCurrentTrackPiece;
     }
 
     public TrackPieces getNext() {
         return pieces.getNext();
     }
 
-    public void setMyCurrentTrackPiece(int yourPieceIndex) {
-        this.myCurrentTrackPiece = yourPieceIndex;
+    public void setMyCurrentTrackPiece(TrackPieces piece) {
+        this.myCurrentTrackPiece = piece;
+    }
+
+    public void setMyCurrentTrackPiece(int pieceIndex) {
+        this.myCurrentTrackPiece = getPieceForIndex(pieceIndex);
     }
 
     public TrackPieces getPieceForIndex(int index) {
@@ -68,20 +73,20 @@ public class TrackModel {
      * Get the next switch piece index starting from current index.
      */
 
-    // TODO why not returning the pieces?
-    public int getNextSwitch() {
+    public TrackPieces getNextSwitch() {
         return getNextSwitchByIndex(this.myCurrentTrackPiece);
     }
 
     /*
-     * Get the next switch piece index starting from given index (exclusive).
+     * Get the next switch piece index starting from given piece (exclusive).
      */
-    public int getNextSwitchByIndex(int index) {
-        this.pieces.setCurrent(index + 1);
+    public TrackPieces getNextSwitchByIndex(TrackPieces from) {
+        this.pieces.setCurrent(from);
+        this.pieces.advance();
         while (!this.pieces.getCurrent().isSwitch) {
             this.pieces.advance();
         }
-        return this.pieces.getCurrentIndex();
+        return this.pieces.getCurrent();
     }
 
     public TrackLanes getLane(int index) {
@@ -128,20 +133,25 @@ public class TrackModel {
      * Get distance between to pieces, excluding end pieces.
      */
 
-    public double getLaneDistanceBetweenPieces(int startPieceIndex,
-            int endPieceIndex, int laneIndex) {
+    public double getLaneDistanceBetweenPieces(TrackPieces startPiece,
+            TrackPieces endPiece, int laneIndex) {
 
-        int endIndex = endPieceIndex;
+        int endIndex = getIndexForPiece(endPiece);
 
-        if (endPieceIndex < startPieceIndex) {
+        if (getIndexForPiece(endPiece) < getIndexForPiece(startPiece)) {
             endIndex += (this.pieces.getAll().size());
         }
         double distance = 0.0;
-        for (int i = startPieceIndex + 1; i < endIndex; i++) {
+        for (int i = getIndexForPiece(startPiece) + 1; i < endIndex; i++) {
             distance += getLaneLengthOnPiece(i % this.pieces.getAll().size(),
                     laneIndex);
         }
 
         return distance;
     }
+
+    private int getIndexForPiece(TrackPieces piece) {
+        return this.pieces.getIndex(piece);
+    }
+
 }

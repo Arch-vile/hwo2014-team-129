@@ -13,21 +13,21 @@ import org.junit.Test;
 public class TrackModelTest {
 
     private TrackModel model;
+    TrackPieces straight1 = new TrackPieces(110d, 0d, 0d, false);
+    TrackPieces curveRight1 = new TrackPieces(0d, 200d, 90d, false);
+    TrackPieces curveRight2 = new TrackPieces(0d, 200d, 90d, true);
+    TrackPieces curveLeft1 = new TrackPieces(0d, 200d, -90d, false);
+    TrackPieces straight2 = new TrackPieces(220d, 0d, 0d, true);
 
     @Before
     public void setup() {
         List<TrackPieces> pieces = new ArrayList<>();
-        pieces.add(new TrackPieces(110d, 0d, 0d, false)); // First straight 110
-        pieces.add(new TrackPieces(0d, 200d, 90d, false)); // curve
-                                                           // right
-                                                           // angle=90
-        pieces.add(new TrackPieces(0d, 200d, 90d, true)); // curve back
-                                                          // right angle=90
-                                                          // with switch
-        pieces.add(new TrackPieces(0d, 200d, -90d, false)); // curve left angle
-                                                            // 90
-        pieces.add(new TrackPieces(220d, 0d, 0d, true)); // straight 220 with
-                                                         // switch
+
+        pieces.add(straight1);
+        pieces.add(curveRight1);
+        pieces.add(curveRight2);
+        pieces.add(curveLeft1);
+        pieces.add(straight2);
 
         model = new TrackModel(pieces.toArray(new TrackPieces[pieces.size()]),
                 null, null, null, null);
@@ -35,28 +35,29 @@ public class TrackModelTest {
 
     @Test
     public void getNextSwitch_returns_next_when_on_non_switch() {
-        model.setMyCurrentTrackPiece(0);
-        assertThat(model.getNextSwitch(), is(2));
+        model.setMyCurrentTrackPiece(straight1);
+        assertThat(model.getNextSwitch(), is(curveRight2));
     }
 
     @Test
     public void getNextSwitch_returns_next_when_on_switch() {
-        model.setMyCurrentTrackPiece(2);
-        assertThat(model.getNextSwitch(), is(4));
+        model.setMyCurrentTrackPiece(curveRight2);
+        assertThat(model.getNextSwitch(), is(straight2));
     }
 
     @Test
-    public void getNextSwitch_works_if_only_one_switch_on_track() {
-        model.setMyCurrentTrackPiece(0);
-        model.getAll().remove(4);
-        assertThat(model.getNextSwitch(), is(2));
+    public void getNextSwitch_works_if_only_one_switch_on_track_in_past() {
+        model.setMyCurrentTrackPiece(curveLeft1);
+        model.getAll().remove(straight2);
+        assertThat(model.getNextSwitch(), is(curveRight2));
     }
 
     @Test
     public void getNextSwitch_works_on_consequent_switches() {
-        model.getAll().add(3, new TrackPieces(0d, 200d, 90d, true));
-        model.setMyCurrentTrackPiece(2);
-        assertThat(model.getNextSwitch(), is(3));
+        TrackPieces newSwitch = new TrackPieces(0d, 200d, 90d, true);
+        model.getAll().add(3, newSwitch);
+        model.setMyCurrentTrackPiece(curveRight2);
+        assertThat(model.getNextSwitch(), is(newSwitch));
 
     }
 
