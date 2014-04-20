@@ -107,12 +107,7 @@ public class TrackModel {
         return null;
     }
 
-    public double getLaneLengthOnPiece(int pieceIndex, int laneIndex) {
-
-        double distance = 0.0;
-        TrackPieces piece = this.getPieceForIndex(pieceIndex);
-        TrackLanes lane = this.getLaneForIndex(laneIndex);
-
+    public double getLaneLengthOnPiece(TrackPieces piece, TrackLanes lane) {
         if (piece.isCurve()) {
             double ourLaneOffset = 0.0;
             ourLaneOffset = lane.distanceFromCenter;
@@ -120,38 +115,26 @@ public class TrackModel {
                 ourLaneOffset *= -1;
             }
 
-            distance += ((Math.abs(piece.angle) / 360) * 2 * Math.PI)
+            return ((Math.abs(piece.angle) / 360) * 2 * Math.PI)
                     * (piece.radius - ourLaneOffset);
         } else {
-            distance += piece.length;
+            return piece.length;
         }
-
-        return distance;
     }
 
     /*
-     * Get distance between to pieces, excluding end pieces.
+     * Get distance between two pieces, excluding end pieces.
      */
-
     public double getLaneDistanceBetweenPieces(TrackPieces startPiece,
-            TrackPieces endPiece, int laneIndex) {
+            TrackPieces endPiece, TrackLanes lane) {
 
-        int endIndex = getIndexForPiece(endPiece);
-
-        if (getIndexForPiece(endPiece) < getIndexForPiece(startPiece)) {
-            endIndex += (this.pieces.getAll().size());
-        }
-        double distance = 0.0;
-        for (int i = getIndexForPiece(startPiece) + 1; i < endIndex; i++) {
-            distance += getLaneLengthOnPiece(i % this.pieces.getAll().size(),
-                    laneIndex);
+        double distance = 0d;
+        this.pieces.setCurrent(startPiece);
+        while (this.pieces.advance() != endPiece) {
+            distance += getLaneLengthOnPiece(this.pieces.getCurrent(), lane);
         }
 
         return distance;
-    }
-
-    private int getIndexForPiece(TrackPieces piece) {
-        return this.pieces.getIndex(piece);
     }
 
 }

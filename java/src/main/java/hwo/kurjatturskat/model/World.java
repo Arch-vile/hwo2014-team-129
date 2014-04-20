@@ -179,24 +179,22 @@ public class World {
         return null;
     }
 
-    public boolean isLeftLane() {
-        boolean gotLeft = false;
+    public TrackLanes isLeftLane() {
         for (TrackLanes lane : getLanes()) {
             if (lane.index < this.getMyLane().index) {
-                gotLeft = true;
+                return lane;
             }
         }
-        return gotLeft;
+        return null;
     }
 
-    public boolean isRightLane() {
-        boolean gotRight = false;
+    public TrackLanes isRightLane() {
         for (TrackLanes lane : getLanes()) {
             if (lane.index > this.getMyLane().index) {
-                gotRight = true;
+                return lane;
             }
         }
-        return gotRight;
+        return null;
     }
 
     public LapResults getLapResults() {

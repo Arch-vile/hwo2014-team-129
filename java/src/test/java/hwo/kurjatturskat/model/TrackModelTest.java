@@ -2,6 +2,7 @@ package hwo.kurjatturskat.model;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 
 import java.util.ArrayList;
@@ -59,6 +60,26 @@ public class TrackModelTest {
         model.setMyCurrentTrackPiece(curveRight2);
         assertThat(model.getNextSwitch(), is(newSwitch));
 
+    }
+
+    @Test
+    public void getLaneLength_on_positive_curve() {
+        TrackLanes outerLane = new TrackLanes(0, -11);
+        TrackLanes innerLane = new TrackLanes(0, 11);
+        assertThat(model.getLaneLengthOnPiece(curveRight1, outerLane),
+                is(2 * Math.PI * 211 / 4d));
+        assertThat(model.getLaneLengthOnPiece(curveRight1, innerLane),
+                is(2 * Math.PI * 189 / 4d));
+    }
+
+    @Test
+    public void getLaneLength_on_negative_curve() {
+        TrackLanes outerLane = new TrackLanes(0, 11);
+        TrackLanes innerLane = new TrackLanes(0, -11);
+        assertThat(model.getLaneLengthOnPiece(curveLeft1, outerLane),
+                is(2 * Math.PI * 211 / 4d));
+        assertThat(model.getLaneLengthOnPiece(curveLeft1, innerLane),
+                is(2 * Math.PI * 189 / 4d));
     }
 
 }

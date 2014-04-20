@@ -44,12 +44,13 @@ public class MarkusBot implements Driver {
                         + " Next switch: " + nSwitch + " " + nnSwitch);
 
                 for (int i = 0; i < world.getLanes().length; i++) {
+                    TrackLanes lane = world.getLanes()[i];
                     System.out.println("Lane"
                             + i
                             + ": "
                             + world.getTrackModel()
                                     .getLaneDistanceBetweenPieces(nSwitch,
-                                            nnSwitch, i));
+                                            nnSwitch, lane));
                 }
             }
             lastThrottle = 0.2;
@@ -60,12 +61,13 @@ public class MarkusBot implements Driver {
                 System.out.println("Lane: " + world.getMyLane().index
                         + " Next switch: " + nSwitch + " " + nnSwitch);
                 for (int i = 0; i < world.getLanes().length; i++) {
+                    TrackLanes lane = world.getLanes()[i];
                     System.out.println("Lane"
                             + i
                             + ": "
                             + world.getTrackModel()
                                     .getLaneDistanceBetweenPieces(nSwitch,
-                                            nnSwitch, i));
+                                            nnSwitch, lane));
                 }
             }
             lastThrottle = 0.8;
@@ -82,20 +84,22 @@ public class MarkusBot implements Driver {
 
         TrackLanes myLane = world.getMyLane();
         double myLength = world.getTrackModel().getLaneDistanceBetweenPieces(
-                nSwitch, nnSwitch, myLane.index);
+                nSwitch, nnSwitch, myLane);
         double leftLength = 0;
         double rightLength = 0;
         int drive = 0;
 
-        if (world.isLeftLane()) {
+        // TODO: There can be more then two lanes on trac -> more then one lane
+        // on left
+        if (world.isLeftLane() != null) {
             leftLength = world.getTrackModel().getLaneDistanceBetweenPieces(
-                    nSwitch, nnSwitch, myLane.index - 1);
+                    nSwitch, nnSwitch, world.isLeftLane());
         }
-        if (world.isRightLane()) {
+        if (world.isRightLane() != null) {
             rightLength = world.getTrackModel().getLaneDistanceBetweenPieces(
-                    nSwitch, nnSwitch, myLane.index + 1);
+                    nSwitch, nnSwitch, world.isRightLane());
         }
-        if (world.isLeftLane() && world.isRightLane()) {
+        if (world.isLeftLane() != null && world.isRightLane() != null) {
             if (leftLength < myLength) {
                 drive = -1;
             }
@@ -110,10 +114,10 @@ public class MarkusBot implements Driver {
                 return "Left";
             }
 
-        } else if (world.isLeftLane()) {
+        } else if (world.isLeftLane() != null) {
             if (leftLength < myLength)
                 return "Left";
-        } else if (world.isRightLane()) {
+        } else if (world.isRightLane() != null) {
             if (rightLength < myLength)
                 return "Right";
         }
