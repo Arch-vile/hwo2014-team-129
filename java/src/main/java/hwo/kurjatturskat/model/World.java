@@ -192,10 +192,13 @@ public class World {
     }
 
     public boolean isLeftLane() {
-        if (this.getMyLane().index - 1 >= 0) {
-            return true;
+        boolean gotLeft = false;
+        for (TrackLanes lane : getLanes()) {
+            if (lane.index < this.getMyLane().index) {
+                gotLeft = true;
+            }
         }
-        return false;
+        return gotLeft;
     }
 
     public boolean isRightLane() {
