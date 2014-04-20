@@ -125,9 +125,7 @@ public class TrackModel {
         int endIndex = endPieceIndex;
 
         if (endPieceIndex < startPieceIndex) {
-            System.out.println(endIndex + " " + this.pieces.getAll().size());
             endIndex += (this.pieces.getAll().size());
-            System.out.println(endIndex);
         }
         double distance = 0.0;
         for (int i = startPieceIndex + 1; i < endIndex; i++) {
