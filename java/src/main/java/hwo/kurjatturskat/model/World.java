@@ -42,7 +42,7 @@ public class World {
             return;
         }
         PiecePosition myPiecePos = myCarPosition.piecePosition;
-        trackModel.setCurrentPiece(myPiecePos.pieceIndex);
+        trackModel.setMyCurrentTrackPiece(myPiecePos.pieceIndex);
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
                 myPiecePos.lane, trackModel.getCurrent(), myCarPosition.angle);

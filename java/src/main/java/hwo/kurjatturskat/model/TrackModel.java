@@ -5,6 +5,7 @@ import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.util.LoopingList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,10 +16,15 @@ public class TrackModel {
     private RaceSession raceSession;
     private String trackId = "";
     private String trackName = "";
+    private int myCurrentTrackPiece = 0;
 
     public TrackModel(TrackPieces pieces[], TrackLanes lanes[],
             RaceSession raceSession, String trackId, String trackName) {
-        this.pieces = new LoopingList<>(Arrays.asList(pieces));
+
+        ArrayList<TrackPieces> pieceList = new ArrayList<>();
+        pieceList.addAll(Arrays.asList(pieces));
+
+        this.pieces = new LoopingList<>(pieceList);
         this.lanes = lanes;
         this.raceSession = raceSession;
         this.trackId = trackId;
@@ -26,15 +32,15 @@ public class TrackModel {
     }
 
     public TrackPieces getCurrent() {
-        return pieces.getCurrent();
+        return pieces.getByIndex(myCurrentTrackPiece);
     }
 
     public TrackPieces getNext() {
         return pieces.getNext();
     }
 
-    public void setCurrentPiece(int yourPieceIndex) {
-        pieces.setCurrent(yourPieceIndex);
+    public void setMyCurrentTrackPiece(int yourPieceIndex) {
+        this.myCurrentTrackPiece = yourPieceIndex;
     }
 
     public TrackPieces getPieceForIndex(int index) {
