@@ -9,7 +9,6 @@ import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
-import hwo.kurjatturskat.core.message.lapfinished.RaceTime;
 import hwo.kurjatturskat.util.Physics;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ public class World {
 
     private TrackModel trackModel;
     private CarIdentifier myCar;
-    private RaceTime myRaceTime;
     private double recordSpeed = 0;
     private double speed;
     private boolean onTrack;
@@ -62,10 +60,6 @@ public class World {
         // + this.distanceTraveled + "): " + speed);
     }
 
-    public RaceTime getMyRaceTime() {
-        return this.myRaceTime;
-    }
-
     public double getMyRecordSpeed() {
         return this.recordSpeed;
     }
@@ -82,15 +76,12 @@ public class World {
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
         this.myPhysics = new Physics(this.lanes);
-        this.myRaceTime = new RaceTime();
-
         this.lapResults = new LapResults(message.getData().race.raceSession);
     }
 
     public void update(LapFinishedMsg message) {
         if (this.myCar.isSameCar(message.getData().car)) {
             this.lapResults.lapFinished(message.getData());
-            this.myRaceTime.update(message.getData().raceTime);
         }
 
     }

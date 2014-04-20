@@ -53,6 +53,7 @@ public class TrackModel {
         return this.trackId;
     }
 
+    // TODO: remove?
     public int getLaps() {
         return this.raceSession.laps;
     }

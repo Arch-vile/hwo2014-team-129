@@ -73,8 +73,9 @@ public class Draw {
         g.fillRect(15, maxPlottedYCoord + 30, 300, 200);
 
         g.setColor(Color.RED);
-        g.drawString(String.format("Lap: %s/%s", world.getMyRaceTime()
-                .getCurrentLap(), world.getTrackModel().getLaps()), 20,
+        g.drawString(String.format("Lap: %s/%s", world.getLapResults()
+                .getLaps().size() + 1,
+                world.getLapResults().getRaceSession().laps), 20,
                 maxPlottedYCoord + 50);
 
         g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
