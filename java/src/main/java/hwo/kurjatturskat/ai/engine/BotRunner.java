@@ -72,6 +72,8 @@ public class BotRunner {
                     this.sender.sendMessage(new SwitchLaneMsg(direction));
                 } else {
                     Double throttle = this.driver.getThrottle(world);
+                    // Let's update physics with throttle
+                    world.myPhysics.setThrottle(throttle);
                     this.sender.sendMessage(new ThrottleMsg(throttle));
                 }
             }
