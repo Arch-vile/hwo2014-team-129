@@ -205,4 +205,20 @@ public class World {
         return null;
     }
 
+    public boolean isLeftLane() {
+        if (this.getMyLane().index - 1 >= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isRightLane() {
+        boolean gotRight = false;
+        for (TrackLanes lane : getLanes()) {
+            if (lane.index > this.getMyLane().index) {
+                gotRight = true;
+            }
+        }
+        return gotRight;
+    }
 }

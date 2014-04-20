@@ -60,6 +60,8 @@ public class BotRunner {
 
         Message<?> message = null;
 
+        boolean switchSent = false;
+        int sswitch = world.getTrackModel().getNextSwitch();
         while ((message = this.receiver.waitForMessage()) != null
                 && !tournamentEnd(message)) {
 
@@ -69,11 +71,18 @@ public class BotRunner {
             if (world.isInitialized()) {
                 String direction = this.driver.getLane(world);
                 if (direction != null) {
-                    this.sender.sendMessage(new SwitchLaneMsg(direction));
-                } else {
-                    Double throttle = this.driver.getThrottle(world);
-                    this.sender.sendMessage(new ThrottleMsg(throttle));
+                    if (!switchSent) {
+                        this.sender.sendMessage(new SwitchLaneMsg(direction));
+                        switchSent = true;
+                    } else if (sswitch != world.getTrackModel().getNextSwitch()) {
+                        switchSent = false;
+                        sswitch = world.getTrackModel().getNextSwitch();
+                    }
                 }
+                // } else {
+                Double throttle = this.driver.getThrottle(world);
+                this.sender.sendMessage(new ThrottleMsg(throttle));
+                // }
             }
         }
 
