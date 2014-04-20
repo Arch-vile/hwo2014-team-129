@@ -67,6 +67,8 @@ public class Draw {
 
     private void drawCurve(Curve element, Graphics g) {
 
+        g.setColor(Color.BLACK);
+
         double right = 1;
         if (element.getAngle() < 0)
             right = -1;
@@ -78,8 +80,8 @@ public class Draw {
             Vector lastPlot = startPlot;
             for (double angle = 5; angle <= Math.abs(element.getAngle()); angle += 5) {
                 Vector nextPlot = VectorMath.rotate(startPlot, angle * right);
-                drawLine(lastPlot.add(element.position),
-                        nextPlot.add(element.position), g);
+                drawLine(lastPlot.add(element.getPosition()),
+                        nextPlot.add(element.getPosition()), g);
                 lastPlot = nextPlot;
             }
 
@@ -105,15 +107,18 @@ public class Draw {
     }
 
     private void drawStraight(Straight straight, Graphics g) {
+
+        g.setColor(Color.BLACK);
+
         for (TrackLanes lane : this.lanes) {
 
             Vector offSet = VectorMath.rotate(straight.getDirection(), 90)
                     .normalize().multiply(lane.distanceFromCenter);
 
-            drawLine(straight.position.get(0) + offSet.get(0),
-                    straight.position.get(1) + offSet.get(1), straight
-                            .calculateEndPosition().get(0) + offSet.get(0),
-                    straight.calculateEndPosition().get(1) + offSet.get(1), g);
+            drawLine(straight.getPosition().get(0) + offSet.get(0), straight
+                    .getPosition().get(1) + offSet.get(1), straight
+                    .calculateEndPosition().get(0) + offSet.get(0), straight
+                    .calculateEndPosition().get(1) + offSet.get(1), g);
         }
     }
 
@@ -123,7 +128,6 @@ public class Draw {
         int adjustX2 = adjustX(x2);
         int adjustY2 = adjustY(y2);
 
-        g.setColor(Color.BLACK);
         g.drawLine(adjustX1, adjustY1, adjustX2, adjustY2);
     }
 

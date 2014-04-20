@@ -1,11 +1,10 @@
 package hwo.kurjatturskat.visualization;
 
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+
 import org.la4j.vector.Vector;
 
 public class Curve extends TrackElement {
-
-    private double angle;
-    private double radius;
 
     /**
      * Track start pos relative to circle center
@@ -18,18 +17,16 @@ public class Curve extends TrackElement {
      *            in degrees
      * @param radius
      */
-    public Curve(double angle, double radius) {
-        super(TrackElement.TYPE_CURVE);
-        this.angle = angle;
-        this.radius = radius;
+    public Curve(TrackPieces trackPiece) {
+        super(TrackElement.TYPE_CURVE, trackPiece);
     }
 
     public double getAngle() {
-        return this.angle;
+        return getTrackPiece().angle;
     }
 
     public double getRadius() {
-        return this.radius;
+        return getTrackPiece().radius;
     }
 
     public Vector getRelativeStartPoint() {
@@ -42,23 +39,23 @@ public class Curve extends TrackElement {
     }
 
     public Vector calculateRelativeEndPoint() {
-        return VectorMath.rotate(relativeStartPos, angle);
+        return VectorMath.rotate(relativeStartPos, getAngle());
     }
 
     public Vector calculateEndPoint() {
-        return this.position.add(calculateRelativeEndPoint());
+        return getPosition().add(calculateRelativeEndPoint());
     }
 
     public Vector calculateStartPoint() {
-        return this.position.add(getRelativeStartPoint());
+        return getPosition().add(getRelativeStartPoint());
     }
 
     @Override
     public String toString() {
         return String
                 .format("Curve center: %s startPoint: %s endPoint: %s angle: %s radius: %s",
-                        this.position, this.calculateStartPoint(),
-                        this.calculateEndPoint(), angle, radius);
+                        getPosition(), this.calculateStartPoint(),
+                        this.calculateEndPoint(), getAngle(), getRadius());
     }
 
 }

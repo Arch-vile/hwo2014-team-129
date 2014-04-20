@@ -1,18 +1,18 @@
 package hwo.kurjatturskat.visualization;
 
+import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+
 import org.la4j.vector.Vector;
 
 public class Straight extends TrackElement {
 
-    private double length;
     /**
      * Contains the length
      */
     private Vector direction;
 
-    public Straight(double length) {
-        super(TrackElement.TYPE_STRAIGHT);
-        this.length = length;
+    public Straight(TrackPieces trackPiece) {
+        super(TrackElement.TYPE_STRAIGHT, trackPiece);
     }
 
     public Vector getDirection() {
@@ -24,16 +24,16 @@ public class Straight extends TrackElement {
     }
 
     public double getLength() {
-        return this.length;
+        return getTrackPiece().length;
     }
 
     public Vector calculateEndPosition() {
-        return this.position.add(this.direction);
+        return getPosition().add(this.direction);
     }
 
     @Override
     public String toString() {
         return String.format("Straight start: %s direction: %s end: %s",
-                this.position, this.direction, calculateEndPosition());
+                getPosition(), this.direction, calculateEndPosition());
     }
 }
