@@ -25,14 +25,17 @@ public class Draw {
     List<TrackLanes> lanes;
     private List<TrackElement> pieces;
     private World world;
+    private StringBuffer statusBoard;
 
     public Draw(List<TrackElement> pieces, World world) {
+        this.statusBoard = new StringBuffer();
         this.pieces = pieces;
         this.lanes = Arrays.asList(world.getLanes());
         this.world = world;
     }
 
     public void paint(Graphics g) {
+        this.statusBoard = new StringBuffer();
 
         int lineIndex = 0;
 
@@ -44,7 +47,10 @@ public class Draw {
 
         plotCar(g);
 
-        plotSpeed(g);
+        plotSpeed();
+        plotLapTimes();
+
+        plotStatusBoard(g);
 
     }
 
@@ -68,38 +74,39 @@ public class Draw {
                 adjustY(element.getPosition().get(1)));
     }
 
-    public void plotSpeed(Graphics g) {
+    private void plotStatusBoard(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(15, maxPlottedYCoord + 30, 300, 200);
-
         g.setColor(Color.RED);
-        g.drawString(String.format("Lap: %s/%s", world.getLapResults()
-                .getLaps().size() + 1,
-                world.getLapResults().getRaceSession().laps), 20,
-                maxPlottedYCoord + 50);
-
-        g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
-                maxPlottedYCoord + 70);
-        g.drawString(
-                String.format("Record speed: %s", world.getMyRecordSpeed()),
-                20, maxPlottedYCoord + 90);
-
-        plotLapTimes(g);
-
+        int i = 0;
+        for (String line : this.statusBoard.toString().split("\n")) {
+            g.drawString(line, 20, maxPlottedYCoord + 45 + i * 15);
+            i++;
+        }
     }
 
-    public void plotLapTimes(Graphics g) {
+    public void plotSpeed() {
+
+        this.statusBoard.append(String.format("Lap: %s/%s\n", world
+                .getLapResults().getLaps().size() + 1, world.getLapResults()
+                .getRaceSession().laps));
+
+        this.statusBoard
+                .append(String.format("Speed: %s\n", world.getMySpeed()));
+        this.statusBoard.append(String.format("Record speed: %s\n",
+                world.getMyRecordSpeed()));
+    }
+
+    private void plotLapTimes() {
 
         for (int i = 0; i < this.world.getLapResults().getRaceSession().laps; i++) {
             if (i < this.world.getLapResults().getLaps().size()) {
                 LapFinishedData lapData = this.world.getLapResults().getLaps()
                         .get(i);
-                g.drawString(String.format("Lap %s: %s",
-                        lapData.lapTime.lap + 1, lapData.lapTime.getLapTime()),
-                        20, maxPlottedYCoord + 110 + (20 * i));
+                this.statusBoard.append(String.format("Lap %s: %s\n",
+                        lapData.lapTime.lap + 1, lapData.lapTime.getLapTime()));
             } else {
-                g.drawString(String.format("Lap %s: --:--:---", i + 1), 20,
-                        maxPlottedYCoord + 110 + (20 * i));
+                statusBoard.append(String.format("Lap %s: --:--:---\n", i + 1));
             }
 
         }
