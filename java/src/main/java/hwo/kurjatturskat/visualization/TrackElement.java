@@ -11,11 +11,14 @@ public class TrackElement {
 
     public static final String TYPE_STRAIGHT = "straight";
     public static final String TYPE_CURVE = "curve";
-    protected String type;
-    protected Vector position;
 
-    public TrackElement(String type) {
+    private final TrackPieces trackPiece;
+    private final String type;
+    private Vector position;
+
+    public TrackElement(String type, TrackPieces trackPiece) {
         this.type = type;
+        this.trackPiece = trackPiece;
     }
 
     public String getType() {
@@ -50,11 +53,15 @@ public class TrackElement {
 
     private static TrackElement convert(TrackPieces piece) {
         if (piece.isCurve()) {
-            return new Curve(piece.angle, piece.radius);
+            return new Curve(piece);
         } else {
-            return new Straight(piece.length);
+            return new Straight(piece);
         }
 
+    }
+
+    public TrackPieces getTrackPiece() {
+        return trackPiece;
     }
 
 }
