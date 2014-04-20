@@ -46,4 +46,7 @@ public class LoopingList<T> {
         return this.items;
     }
 
+    public int getCurrentIndex() {
+        return this.index;
+    }
 }

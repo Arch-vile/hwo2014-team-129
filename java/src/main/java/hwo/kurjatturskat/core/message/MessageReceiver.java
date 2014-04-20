@@ -48,7 +48,6 @@ public class MessageReceiver {
                 return gson.fromJson(line, JoinMsg.class);
 
             case gameInit:
-                System.err.println("Unhandled message: " + line);
                 return gson.fromJson(line, GameInitMsg.class);
 
             case crash:

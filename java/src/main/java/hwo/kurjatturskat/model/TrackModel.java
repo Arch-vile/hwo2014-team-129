@@ -54,4 +54,22 @@ public class TrackModel {
         return this.raceSession.laps;
     }
 
+    /*
+     * Get the next switch piece index starting from current index.
+     */
+    public int getNextSwitch() {
+        return getNextSwitchByIndex(this.pieces.getCurrentIndex());
+    }
+
+    /*
+     * Get the next switch piece index starting from given index.
+     */
+    public int getNextSwitchByIndex(int index) {
+        index += 1;
+        while (!this.pieces.getByIndex(index).isSwitch) {
+            index++;
+        }
+        return index % this.pieces.getAll().size();
+    }
+
 }

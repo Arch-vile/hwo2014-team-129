@@ -3,7 +3,6 @@ package hwo.kurjatturskat.ai.engine;
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.SlowBot;
 import hwo.kurjatturskat.core.message.CrashMsg;
-import hwo.kurjatturskat.core.message.GameStartMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
@@ -125,11 +124,10 @@ public class BotRunner {
     private void updateWorld(Message<?> message) {
         switch (message.getType()) {
         case gameStart:
-            this.gameId = ((GameStartMsg) message).gameId;
-
             break;
         case carPositions:
             this.world.update((CarPositionsMsg) message);
+            this.gameId = ((CarPositionsMsg) message).gameId;
             break;
         case gameInit:
             this.world.update((GameInitMsg) message);
