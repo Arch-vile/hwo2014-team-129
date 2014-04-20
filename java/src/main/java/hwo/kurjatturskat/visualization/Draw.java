@@ -1,6 +1,7 @@
 package hwo.kurjatturskat.visualization;
 
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
+import hwo.kurjatturskat.core.message.lapfinished.LapFinishedData;
 import hwo.kurjatturskat.model.World;
 
 import java.awt.Color;
@@ -82,12 +83,24 @@ public class Draw {
                 String.format("Record speed: %s", world.getMyRecordSpeed()),
                 20, maxPlottedYCoord + 90);
 
-        int n = 1;
-        int addY = 20;
-        while (n <= world.getTrackModel().getLaps()) {
-            g.drawString(String.format("Lap %s: %s", n, world.getMyLapTime(n)),
-                    20, maxPlottedYCoord + 110 + (addY * n));
-            n++;
+        plotLapTimes(g);
+
+    }
+
+    public void plotLapTimes(Graphics g) {
+
+        for (int i = 0; i < this.world.getLapResults().getRaceSession().laps; i++) {
+            if (i < this.world.getLapResults().getLaps().size()) {
+                LapFinishedData lapData = this.world.getLapResults().getLaps()
+                        .get(i);
+                g.drawString(String.format("Lap %s: %s",
+                        lapData.lapTime.lap + 1, lapData.lapTime.getLapTime()),
+                        20, maxPlottedYCoord + 110 + (20 * i));
+            } else {
+                g.drawString(String.format("Lap %s: --:--:---", i + 1), 20,
+                        maxPlottedYCoord + 110 + (20 * i));
+            }
+
         }
 
     }

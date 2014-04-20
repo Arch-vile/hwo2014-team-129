@@ -9,7 +9,6 @@ import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
-import hwo.kurjatturskat.core.message.lapfinished.LapTime;
 import hwo.kurjatturskat.core.message.lapfinished.RaceTime;
 import hwo.kurjatturskat.util.Physics;
 
@@ -20,7 +19,6 @@ public class World {
     private TrackModel trackModel;
     private CarIdentifier myCar;
     private RaceTime myRaceTime;
-    private LapTime myLapTimes[];
     private double recordSpeed = 0;
     private double speed;
     private boolean onTrack;
@@ -32,6 +30,12 @@ public class World {
     private TrackLanes[] lanes;
 
     public Physics myPhysics;
+
+    private LapResults lapResults;
+
+    public World() {
+
+    }
 
     public void update(CarPositionsMsg msg) {
         CarPosition myCarPosition = this.getCarPositionForCar(msg.getData(),
@@ -70,10 +74,6 @@ public class World {
         return this.speed;
     }
 
-    public int getMyLapTime(int lap) {
-        return this.myLapTimes[lap - 1].millis;
-    }
-
     public void update(GameInitMsg message) {
         this.trackModel = new TrackModel(message.getData().race.track.pieces,
                 message.getData().race.track.lanes,
@@ -83,16 +83,13 @@ public class World {
         this.lanes = message.getData().race.track.lanes;
         this.myPhysics = new Physics(this.lanes);
         this.myRaceTime = new RaceTime();
-        this.myLapTimes = new LapTime[message.getData().race.raceSession.laps];
-        for (int n = 0; n < message.getData().race.raceSession.laps; n++) {
-            this.myLapTimes[n] = new LapTime();
-        }
+
+        this.lapResults = new LapResults(message.getData().race.raceSession);
     }
 
     public void update(LapFinishedMsg message) {
         if (this.myCar.isSameCar(message.getData().car)) {
-            this.myLapTimes[message.getData().lapTime.lap].update(message
-                    .getData().lapTime);
+            this.lapResults.lapFinished(message.getData());
             this.myRaceTime.update(message.getData().raceTime);
         }
 
@@ -207,4 +204,9 @@ public class World {
         }
         return gotRight;
     }
+
+    public LapResults getLapResults() {
+        return lapResults;
+    }
+
 }
