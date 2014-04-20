@@ -14,6 +14,7 @@ import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.advanced.CreateRaceMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
 import hwo.kurjatturskat.visualization.PlotterView;
@@ -125,7 +126,7 @@ public class BotRunner {
         switch (message.getType()) {
         case gameStart:
             this.gameId = ((GameStartMsg) message).gameId;
-            System.out.println("GameId: " + this.gameId);
+
             break;
         case carPositions:
             this.world.update((CarPositionsMsg) message);
@@ -134,13 +135,16 @@ public class BotRunner {
             this.world.update((GameInitMsg) message);
             break;
         case yourCar:
-            this.world.setYourCarId(((YourCarMsg) message).getData());
+            this.world.setMyCarId(((YourCarMsg) message).getData());
             break;
         case crash:
             this.world.setOffTrack((CrashMsg) message);
             break;
         case spawn:
             this.world.setOnTrack((SpawnMsg) message);
+            break;
+        case lapFinished:
+            this.world.update((LapFinishedMsg) message);
             break;
         default:
             break;
@@ -163,6 +167,7 @@ public class BotRunner {
 
         // Driver myBot = new ConstantThrottleBot(0.3);
         Driver myBot = new SlowBot();
+        // Driver myBot = new MarkusBot();
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
                 new MessageSender(socket), myBot, botName, botKey, track);

@@ -9,16 +9,21 @@ import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.lapfinished.LapTime;
+import hwo.kurjatturskat.core.message.lapfinished.RaceTime;
 
 import java.util.ArrayList;
 
 public class World {
 
     private TrackModel trackModel;
-    private CarIdentifier yourCar;
+    private CarIdentifier myCar;
+    private RaceTime myRaceTime;
+    private LapTime myLapTimes[];
     private double recordSpeed = 0;
-    private boolean onTrack;
     private double speed;
+    private boolean onTrack;
 
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
@@ -30,7 +35,7 @@ public class World {
 
     public void update(CarPositionsMsg msg) {
         PiecePosition myPiecePos = this.getPiecePositionForCar(msg.getData(),
-                this.yourCar);
+                this.myCar);
         trackModel.setCurrentPiece(myPiecePos.pieceIndex);
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
@@ -46,14 +51,15 @@ public class World {
 
             if (speed > this.recordSpeed) {
                 this.recordSpeed = speed;
-                // if (this.recordSpeed > 8) {
-                // System.out.println("New recordSpeed: " + this.recordSpeed);
-                // }
             }
         }
         this.previousPosition = trackPos;
         // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
         // + this.distanceTraveled + "): " + speed);
+    }
+
+    public RaceTime getMyRaceTime() {
+        return this.myRaceTime;
     }
 
     public double getMyRecordSpeed() {
@@ -64,15 +70,34 @@ public class World {
         return this.speed;
     }
 
+    public int getMyLapTime(int lap) {
+        return this.myLapTimes[lap - 1].millis;
+    }
+
     public void update(GameInitMsg message) {
         this.trackModel = new TrackModel(message.getData().race.track.pieces,
+                message.getData().race.raceSession,
                 message.getData().race.track.id,
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
+        this.myRaceTime = new RaceTime();
+        this.myLapTimes = new LapTime[message.getData().race.raceSession.laps];
+        for (int n = 0; n < message.getData().race.raceSession.laps; n++) {
+            this.myLapTimes[n] = new LapTime();
+        }
     }
 
-    public void setYourCarId(CarIdentifier carId) {
-        this.yourCar = carId;
+    public void update(LapFinishedMsg message) {
+        if (this.myCar.isSameCar(message.getData().car)) {
+            this.myLapTimes[message.getData().lapTime.lap].update(message
+                    .getData().lapTime);
+            this.myRaceTime.update(message.getData().raceTime);
+        }
+
+    }
+
+    public void setMyCarId(CarIdentifier carId) {
+        this.myCar = carId;
         this.onTrack = true;
     }
 
@@ -106,20 +131,20 @@ public class World {
     }
 
     public boolean isInitialized() {
-        return this.trackModel != null && this.yourCar != null;
+        return this.trackModel != null && this.myCar != null;
     }
 
     public void setOffTrack(CrashMsg message) {
-        if (this.yourCar.name.equals(message.getData().name)
-                && this.yourCar.color.equals(message.getData().color)) {
+        if (this.myCar.name.equals(message.getData().name)
+                && this.myCar.color.equals(message.getData().color)) {
             System.out.println("We crashed!");
             this.onTrack = false;
         }
     }
 
     public void setOnTrack(SpawnMsg message) {
-        if (this.yourCar.name.equals(message.getData().name)
-                && this.yourCar.color.equals(message.getData().color)) {
+        if (this.myCar.name.equals(message.getData().name)
+                && this.myCar.color.equals(message.getData().color)) {
             System.out.println("We are back on track!");
             this.onTrack = true;
         }

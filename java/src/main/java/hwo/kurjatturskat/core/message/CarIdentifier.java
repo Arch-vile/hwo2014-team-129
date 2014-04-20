@@ -9,4 +9,8 @@ public class CarIdentifier {
         this.name = name;
         this.color = color;
     }
+
+    public boolean isSameCar(CarIdentifier car) {
+        return (this.name.equals(car.name) && this.color.equals(car.color));
+    }
 }

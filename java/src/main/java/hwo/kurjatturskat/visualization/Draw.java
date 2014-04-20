@@ -54,14 +54,26 @@ public class Draw {
 
     public void plotSpeed(Graphics g) {
         g.setColor(Color.BLACK);
-        g.fillRect(15, maxPlottedYCoord + 30, 300, 100);
+        g.fillRect(15, maxPlottedYCoord + 30, 300, 200);
 
-        g.setColor(Color.GREEN);
-        g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
+        g.setColor(Color.RED);
+        g.drawString(String.format("Lap: %s/%s", world.getMyRaceTime()
+                .getCurrentLap(), world.getTrackModel().getLaps()), 20,
                 maxPlottedYCoord + 50);
+
+        g.drawString(String.format("Speed: %s", world.getMySpeed()), 20,
+                maxPlottedYCoord + 70);
         g.drawString(
                 String.format("Record speed: %s", world.getMyRecordSpeed()),
-                20, maxPlottedYCoord + 70);
+                20, maxPlottedYCoord + 90);
+
+        int n = 1;
+        int addY = 20;
+        while (n <= world.getTrackModel().getLaps()) {
+            g.drawString(String.format("Lap %s: %s", n, world.getMyLapTime(n)),
+                    20, maxPlottedYCoord + 110 + (addY * n));
+            n++;
+        }
 
     }
 

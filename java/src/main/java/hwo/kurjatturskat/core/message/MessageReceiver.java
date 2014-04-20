@@ -2,6 +2,7 @@ package hwo.kurjatturskat.core.message;
 
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
+import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 
 import java.io.BufferedReader;
@@ -47,6 +48,7 @@ public class MessageReceiver {
                 return gson.fromJson(line, JoinMsg.class);
 
             case gameInit:
+                System.err.println("Unhandled message: " + line);
                 return gson.fromJson(line, GameInitMsg.class);
 
             case crash:
@@ -57,6 +59,9 @@ public class MessageReceiver {
 
             case gameStart:
                 return gson.fromJson(line, GameStartMsg.class);
+
+            case lapFinished:
+                return gson.fromJson(line, LapFinishedMsg.class);
 
             case tournamentEnd:
                 return msg;

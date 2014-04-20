@@ -7,19 +7,30 @@ public class MarkusBot implements Driver {
 
     @Override
     public double getThrottle(World world) {
-
         /*
          * Config to get absolute max speed: keimola When the straight start
          * speed up and store the max speed.
          * 
          * New recordSpeed: 9.483289941799981
          */
-        if (world.getTrackModel().getTrackName().equals("keimola")
+        if (world.getTrackModel().getTrackName().equals("Keimola")
                 && (world.getPreviousPosition().pieceIndex > 33 || world
                         .getPreviousPosition().pieceIndex < 4)) {
-            System.out.println("Max speed!!!");
             return 1;
         }
+
+        /*
+         * Stop the car from some speed.. get the distance.
+         */
+        // if (world.getTrackModel().getTrackName().equals("Keimola")) {
+        // if ((world.getMyRaceTime().getCurrentLap() == 0 && world
+        // .getPreviousPosition().pieceIndex > 37)
+        // || (world.getMyRaceTime().getCurrentLap() == 1 && world
+        // .getPreviousPosition().pieceIndex < 2)) {
+        // System.out.println("Stop at speed: " + world.getMySpeed());
+        // return 0;
+        // }
+        // }
 
         if (world.getTrackModel().getCurrent().isCurve()) {
             if (lastThrottle != 0.2) {
@@ -39,8 +50,9 @@ public class MarkusBot implements Driver {
 
     @Override
     public String getLane(World world) {
-        // TODO Auto-generated method stub
-        return null;
+        return "Right";
+
+        // return null;
     }
 
 }

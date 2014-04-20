@@ -1,5 +1,6 @@
 package hwo.kurjatturskat.model;
 
+import hwo.kurjatturskat.core.message.gameinit.RaceSession;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.util.LoopingList;
 
@@ -9,11 +10,16 @@ import java.util.List;
 public class TrackModel {
 
     private LoopingList<TrackPieces> pieces;
+    private RaceSession raceSession;
     private String trackId = "";
     private String trackName = "";
 
-    public TrackModel(TrackPieces pieces[], String trackId, String trackName) {
+    public TrackModel(TrackPieces pieces[], RaceSession raceSession,
+            String trackId, String trackName) {
         this.pieces = new LoopingList<>(Arrays.asList(pieces));
+        this.raceSession = raceSession;
+        this.trackId = trackId;
+        this.trackName = trackName;
     }
 
     public TrackPieces getCurrent() {
@@ -42,6 +48,10 @@ public class TrackModel {
 
     public String getTrackId() {
         return this.trackId;
+    }
+
+    public int getLaps() {
+        return this.raceSession.laps;
     }
 
 }
