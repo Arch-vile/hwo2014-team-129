@@ -1,15 +1,11 @@
 package hwo.kurjatturskat.core.message.lapfinished;
 
+import java.util.concurrent.TimeUnit;
+
 public class LapTime {
     public int lap;
     public int ticks;
     public int millis;
-
-    public LapTime() {
-        this.lap = -1;
-        this.ticks = -1;
-        this.millis = -1;
-    }
 
     public LapTime(int lap, int ticks, int millis) {
         this.lap = lap;
@@ -17,9 +13,16 @@ public class LapTime {
         this.millis = millis;
     }
 
-    public void update(LapTime lapTime) {
-        this.lap = lapTime.lap;
-        this.ticks = lapTime.ticks;
-        this.millis = lapTime.millis;
+    public String getLapTime() {
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis
+                - TimeUnit.MINUTES.toMillis(minutes));
+        long millisLeft = millis - TimeUnit.MINUTES.toMillis(minutes)
+                - TimeUnit.SECONDS.toMillis(seconds);
+
+        String time = String.format("%02d:%02d:%03d", minutes, seconds,
+                millisLeft);
+        return time;
     }
+
 }
