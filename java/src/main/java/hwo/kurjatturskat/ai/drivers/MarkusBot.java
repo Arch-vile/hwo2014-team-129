@@ -38,15 +38,15 @@ public class MarkusBot implements Driver {
             if (lastThrottle != 0.2) {
                 System.out.println("Seems like a curve. Lets slow down.");
                 System.out.println("Next switch: " + nSwitch + " " + nnSwitch);
-                System.out.println("Lane0: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 0));
-                System.out.println("Lane1: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 1));
-                System.out.println("Lane2: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 2));
+
+                for (int i = 0; i < world.getLanes().length; i++) {
+                    System.out.println("Lane"
+                            + i
+                            + ": "
+                            + world.getTrackModel()
+                                    .getLaneDistanceBetweenPieces(nSwitch,
+                                            nnSwitch, i));
+                }
             }
             lastThrottle = 0.2;
             return 0.2;
@@ -54,16 +54,14 @@ public class MarkusBot implements Driver {
             if (lastThrottle != 1) {
                 System.out.println("We are on straight. Step on it!");
                 System.out.println("Next switch: " + nSwitch + " " + nnSwitch);
-                System.out.println("Lane0: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 0));
-                System.out.println("Lane1: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 1));
-                System.out.println("Lane2: "
-                        + world.getTrackModel().getLaneDistanceBetweenPieces(
-                                nSwitch, nnSwitch, 2));
-
+                for (int i = 0; i < world.getLanes().length; i++) {
+                    System.out.println("Lane"
+                            + i
+                            + ": "
+                            + world.getTrackModel()
+                                    .getLaneDistanceBetweenPieces(nSwitch,
+                                            nnSwitch, i));
+                }
             }
             lastThrottle = 1;
             return 1;
