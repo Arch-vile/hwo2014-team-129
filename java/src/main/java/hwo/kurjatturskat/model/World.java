@@ -11,7 +11,7 @@ import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
 import hwo.kurjatturskat.core.message.lapfinished.LapTime;
 import hwo.kurjatturskat.core.message.lapfinished.RaceTime;
-import hwo.kurjatturskat.util.TrackUtils;
+import hwo.kurjatturskat.util.Physics;
 
 import java.util.ArrayList;
 
@@ -31,6 +31,8 @@ public class World {
 
     private TrackLanes[] lanes;
 
+    public Physics myPhysics;
+
     public void update(CarPositionsMsg msg) {
         CarPosition myCarPosition = this.getCarPositionForCar(msg.getData(),
                 this.myCar);
@@ -43,14 +45,13 @@ public class World {
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
                 myPiecePos.lane, trackModel.getCurrent(), myCarPosition.angle);
 
+        this.myPhysics.addTrackPosition(trackPos);
         // this.myCarTravels.add(trackPos);
 
-        if (this.previousPosition != null) {
-            this.speed = this.getSpeed(this.previousPosition, trackPos);
+        this.speed = this.myPhysics.getCurrentSpeed();
 
-            if (speed > this.recordSpeed) {
-                this.recordSpeed = speed;
-            }
+        if (this.speed > this.recordSpeed) {
+            this.recordSpeed = this.speed;
         }
         this.previousPosition = trackPos;
         // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
@@ -80,6 +81,7 @@ public class World {
                 message.getData().race.track.id,
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
+        this.myPhysics = new Physics(this.lanes);
         this.myRaceTime = new RaceTime();
         this.myLapTimes = new LapTime[message.getData().race.raceSession.laps];
         for (int n = 0; n < message.getData().race.raceSession.laps; n++) {
@@ -160,22 +162,6 @@ public class World {
             System.out.println("We are back on track!");
             this.onTrack = true;
         }
-    }
-
-    /**
-     * Retrieve the speed between two track positions.
-     * 
-     * @param start
-     * @param end
-     * @return
-     */
-    public double getSpeed(TrackPosition start, TrackPosition end) {
-        int startTime = start.gameTick;
-        int endTime = end.gameTick;
-        TrackLanes startLane = getLane(start.lane.endLaneIndex);
-
-        double distance = TrackUtils.getDistance(start, end, startLane);
-        return distance / (endTime - startTime);
     }
 
     public TrackLanes getLane(int index) {

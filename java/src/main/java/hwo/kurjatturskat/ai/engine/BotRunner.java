@@ -79,10 +79,11 @@ public class BotRunner {
                         sswitch = world.getTrackModel().getNextSwitch();
                     }
                 }
-                // } else {
+
                 Double throttle = this.driver.getThrottle(world);
+                // Let's update physics with throttle
+                world.myPhysics.setThrottle(throttle);
                 this.sender.sendMessage(new ThrottleMsg(throttle));
-                // }
             }
         }
 
