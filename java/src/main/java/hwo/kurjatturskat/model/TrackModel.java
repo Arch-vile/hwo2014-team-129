@@ -67,19 +67,21 @@ public class TrackModel {
     /*
      * Get the next switch piece index starting from current index.
      */
+
+    // TODO why not returning the pieces?
     public int getNextSwitch() {
-        return getNextSwitchByIndex(this.pieces.getCurrentIndex());
+        return getNextSwitchByIndex(this.myCurrentTrackPiece);
     }
 
     /*
-     * Get the next switch piece index starting from given index.
+     * Get the next switch piece index starting from given index (exclusive).
      */
     public int getNextSwitchByIndex(int index) {
-        index += 1;
-        while (!this.pieces.getByIndex(index).isSwitch) {
-            index++;
+        this.pieces.setCurrent(index + 1);
+        while (!this.pieces.getCurrent().isSwitch) {
+            this.pieces.advance();
         }
-        return index % this.pieces.getAll().size();
+        return this.pieces.getCurrentIndex();
     }
 
     public TrackLanes getLane(int index) {
