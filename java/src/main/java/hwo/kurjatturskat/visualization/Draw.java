@@ -46,7 +46,6 @@ public class Draw {
         }
 
         plotCar(g);
-
         plotSpeed();
         plotLapTimes();
 
@@ -90,6 +89,9 @@ public class Draw {
         this.statusBoard.append(String.format("Lap: %s/%s\n", world
                 .getLapResults().getLaps().size() + 1, world.getLapResults()
                 .getRaceSession().laps));
+
+        this.statusBoard.append(String.format("Throttle: %s\n",
+                world.myPhysics.getThrottle()));
 
         this.statusBoard
                 .append(String.format("Speed: %s\n", world.getMySpeed()));
