@@ -76,6 +76,7 @@ public class BotRunner {
                     if (!switchSent) {
                         this.sender.sendMessage(new SwitchLaneMsg(direction));
                         switchSent = true;
+                        continue;
                     } else if (!nextLaneSelectionPoint.equals(world
                             .getTrackModel().getNextSwitch())) {
                         switchSent = false;
