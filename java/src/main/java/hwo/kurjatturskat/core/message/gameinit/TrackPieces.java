@@ -21,4 +21,27 @@ public class TrackPieces {
     public boolean isCurve() {
         return this.angle != null;
     }
+
+    public boolean isCurveRight() {
+        if (this.angle > 0)
+            return true;
+        return false;
+    }
+
+    public boolean isCurveLeft() {
+        if (this.angle < 0)
+            return true;
+        return false;
+    }
+
+    public String curveString() {
+        if (this.isCurve()) {
+            if (this.angle < 0)
+                return "Left";
+            else if (this.angle > 0)
+                return "Right";
+        }
+        return "Straight";
+    }
+
 }

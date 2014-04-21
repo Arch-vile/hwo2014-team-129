@@ -137,4 +137,47 @@ public class TrackModel {
         return distance;
     }
 
+    public TrackPieces getNextCurveStart() {
+        return this.getNextCurveStartByIndex(this.myCurrentTrackPiece);
+    }
+
+    public TrackPieces getNextCurveStartByIndex(TrackPieces from) {
+        this.pieces.setCurrent(from);
+        while (this.pieces.getNext().curveString().equals(from.curveString())) {
+            this.pieces.advance();
+        }
+        this.pieces.advance();
+        while (!this.pieces.getCurrent().isCurve()) {
+            this.pieces.advance();
+        }
+        return this.pieces.getCurrent();
+    }
+
+    public TrackPieces getNextCurveEnd() {
+        return this.getNextCurveEndByIndex(this.getNextCurveStart());
+    }
+
+    public TrackPieces getNextCurveEndByIndex(TrackPieces from) {
+        TrackPieces start = this.getNextCurveStartByIndex(from);
+        this.pieces.setCurrent(from);
+
+        while (this.pieces.getNext().curveString().equals(start.curveString())) {
+            this.pieces.advance();
+        }
+
+        return this.pieces.getCurrent();
+    }
+
+    public TrackPieces getBiggestAngle(TrackPieces start, TrackPieces end) {
+        this.pieces.setCurrent(start);
+        TrackPieces biggestAngle = start;
+        while (this.pieces.getCurrent() != end) {
+            if (Math.abs(this.pieces.getCurrent().angle) > Math
+                    .abs(biggestAngle.angle)) {
+                biggestAngle = this.pieces.getCurrent();
+            }
+            this.pieces.advance();
+        }
+        return biggestAngle;
+    }
 }
