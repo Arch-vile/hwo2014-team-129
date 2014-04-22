@@ -7,6 +7,7 @@ public class DragTest {
         /*
          * Recoreded Data for car when throtte is set to 0
          * 
+         * On straight:
          * Piece: [0] speed[1.99268649250204] tick[11] 
          * Piece: [0] speed[1.9528327626519992] tick[12] 
          * Piece: [0] speed[1.9137761073989594] tick[13]
@@ -14,9 +15,14 @@ public class DragTest {
          * Piece: [0] speed[1.8379905735459623] tick[15]
          * Piece: [0] speed[1.8012307620750434] tick[16]
          * ...
+         * On straight:
          * Piece: [0] speed[0.5929301282441202] tick[71]
          * Piece: [0] speed[0.5810715256792349] tick[72]
          * Piece: [0] speed[0.5694500951656494] tick[73]
+         * ...
+         * On curve:
+         * Piece: [3] speed[2.2121096566165597] tick[78]
+         * Piece: [3] speed[2.167867463484229] tick[79] 
          */
 
         double recordedData[] = { 1.99268649250204, 1.9528327626519992,
@@ -26,23 +32,28 @@ public class DragTest {
         double recordedData2[] = { 0.5929301282441202, 0.5810715256792349,
                 0.5694500951656494 };
 
+        double recordedData3[] = { 2.2121096566165597, 2.167867463484229 };
+
         double K = estimateK(recordedData[2], recordedData[1]);
+        System.out.println("\n\nEstimated K: " + K);
         estimateK(recordedData[4], recordedData[3]);
+        System.out.println("\n\nEstimated K: " + K);
 
         double estimated;
         estimated = getSpeedOnNextTickWhenOnZeroThrottle(K, recordedData[0]);
-        System.out.println("\n\nEstimated K: " + K);
         System.out.println("Expected:\t\t" + recordedData[1]);
         System.out.println("Got:\t\t\t" + estimated);
 
         estimated = getSpeedOnNextTickWhenOnZeroThrottle(K, recordedData[3]);
-        System.out.println("\n\nEstimated K: " + K);
         System.out.println("Expected:\t\t" + recordedData[4]);
         System.out.println("Got:\t\t\t" + estimated);
 
         estimated = getSpeedOnNextTickWhenOnZeroThrottle(K, recordedData2[0]);
-        System.out.println("\n\nEstimated K: " + K);
         System.out.println("Expected:\t\t" + recordedData2[1]);
+        System.out.println("Got:\t\t\t" + estimated);
+
+        estimated = getSpeedOnNextTickWhenOnZeroThrottle(K, recordedData3[0]);
+        System.out.println("Expected:\t\t" + recordedData3[1]);
         System.out.println("Got:\t\t\t" + estimated);
     }
 
