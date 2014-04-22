@@ -88,6 +88,12 @@ public class BotRunner {
                 Double throttle = this.driver.getThrottle(world);
                 // Let's update physics with throttle
                 world.myPhysics.setThrottle(throttle);
+
+                // Let's check what physics think about coefficients
+                // System.out.println("Coeffs: "
+                // + world.myPhysics.getApproximateDrag() + " "
+                // + world.myPhysics.getApproximateRollingFriction());
+
                 this.sender.sendMessage(new ThrottleMsg(throttle));
             }
         }
