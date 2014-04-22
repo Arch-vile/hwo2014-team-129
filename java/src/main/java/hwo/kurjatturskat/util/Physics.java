@@ -245,7 +245,7 @@ public class Physics {
         return x;
     }
 
-    private void addNewestSolutionToApproximation(Vector x) {
+    protected void addNewestSolutionToApproximation(Vector x) {
         // we average the drag solutions, should we discard impossible values?
         // c1, i.e. drag, should be negative
         // c2, i.e. rolling friction should be positive
