@@ -6,6 +6,7 @@ import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
+import hwo.kurjatturskat.core.message.gameinit.CarDimensions;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
@@ -76,6 +77,18 @@ public class World {
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
         this.myPhysics = new Physics(this.lanes);
+        // check for my car
+        for (CarDimensions carDimensions : message.getData().race.cars) {
+            CarIdentifier car = carDimensions.car;
+            System.out.println("CAR: " + car);
+            if (car != null && car.color.equals(this.myCar.color)) {
+                this.myPhysics.setCarDimensions(
+                        carDimensions.dimensions.length,
+                        carDimensions.dimensions.flag);
+                break;
+            }
+        }
+
         this.lapResults = new LapResults(message.getData().race.raceSession);
     }
 

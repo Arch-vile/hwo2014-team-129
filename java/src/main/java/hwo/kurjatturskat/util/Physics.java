@@ -24,9 +24,11 @@ public class Physics {
 
     /**
      * Needed for trigonometry and stuff.
+     * 
+     * Defaults due to GameInit cars part parsing not working
      */
-    private double carLength;
-    private double flagPosition;
+    private double carLength = 40.0;
+    private double flagPosition = 10.0;
 
     /**
      * Current speed.
@@ -92,6 +94,11 @@ public class Physics {
      */
     public Physics(TrackLanes[] lanes) {
         this.lanes = lanes;
+    }
+
+    public void setCarDimensions(double carLength, double flagPosition) {
+        this.carLength = carLength;
+        this.flagPosition = flagPosition;
     }
 
     public void addTrackPosition(TrackPosition position) {
@@ -232,6 +239,10 @@ public class Physics {
             // abort, we have no information to calculate from
             return 0.0;
         }
+
+        System.out.println("Anglestuff: " + angleSpeed + " " + carSpeed + " "
+                + angle + " " + angleAcceleration);
+
         // All to radians
         // required as positive for trigs
         double radianAngle = this.getAngleAsRadians(Math.abs(angle));
@@ -280,10 +291,11 @@ public class Physics {
                 { previous[0], current[1] } });
         Vector b = new BasicVector(new double[] { current[2], previous[2] });
 
-        System.out.println("CURRENT: " + current[0] + " " + current[1] + " "
-                + current[2]);
-        System.out.println("PREVIOUS: " + previous[0] + " " + previous[1] + " "
-                + previous[2]);
+        // System.out.println("CURRENT: " + current[0] + " " + current[1] + " "
+        // + current[2]);
+        // System.out.println("PREVIOUS: " + previous[0] + " " + previous[1] +
+        // " "
+        // + previous[2]);
         // System.out.flush();
         // System.out.println(b);
         // LinearSystemSolver solver =

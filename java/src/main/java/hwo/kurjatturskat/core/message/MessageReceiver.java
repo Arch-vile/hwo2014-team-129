@@ -48,6 +48,7 @@ public class MessageReceiver {
                 return gson.fromJson(line, JoinMsg.class);
 
             case gameInit:
+                System.err.println("GameInit: " + line);
                 return gson.fromJson(line, GameInitMsg.class);
 
             case crash:

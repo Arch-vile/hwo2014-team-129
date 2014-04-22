@@ -90,9 +90,8 @@ public class BotRunner {
                 world.myPhysics.setThrottle(throttle);
 
                 // Let's check what physics think about coefficients
-                System.out.println("Coeffs: "
-                        + world.myPhysics.getApproximateDrag() + " "
-                        + world.myPhysics.getApproximateRollingFriction());
+                System.out.println("Angle Friction: "
+                        + world.myPhysics.getApproxCarAngleFriction());
 
                 this.sender.sendMessage(new ThrottleMsg(throttle));
             }
@@ -184,7 +183,7 @@ public class BotRunner {
         System.out.println("Connecting to " + host + ":" + port + " as "
                 + botName + "/" + botKey + " @ " + track);
 
-        Driver myBot = new ConstantThrottleBot(0.5);
+        Driver myBot = new ConstantThrottleBot(0.9);
         // Driver myBot = new SlowBot();
         // Driver myBot = new MarkusBot();
         final Socket socket = new Socket(host, port);
