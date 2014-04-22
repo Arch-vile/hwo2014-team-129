@@ -6,7 +6,7 @@ import hwo.kurjatturskat.model.TrackPosition;
 import org.la4j.LinearAlgebra;
 import org.la4j.linear.LinearSystemSolver;
 import org.la4j.matrix.Matrix;
-import org.la4j.matrix.dense.Basic1DMatrix;
+import org.la4j.matrix.sparse.CRSMatrix;
 import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
 
@@ -39,6 +39,11 @@ public class Physics {
      * Throttle set by driver.
      */
     private double throttle;
+
+    /**
+     * Throttle seems to be delayed.
+     */
+    private double prevThrottle;
 
     public TrackPosition previousPosition;
 
@@ -132,7 +137,7 @@ public class Physics {
 
             // should we have previous throttle?
             double[] newCoeffs = { Math.pow(newSpeed, 2) / 2, -1 * newSpeed,
-                    this.acceleration - this.throttle };
+                    this.acceleration - this.prevThrottle };
             if (this.previousCoeffs == null) {
                 this.previousCoeffs = newCoeffs;
             } else { // solve the equations
@@ -141,7 +146,9 @@ public class Physics {
                 if (newSpeed != 0) {
                     Vector solutions = this.approximateDragAndFriction(
                             newCoeffs, this.previousCoeffs);
-                    this.addNewestSolutionToApproximation(solutions);
+                    if (solutions != null) {
+                        this.addNewestSolutionToApproximation(solutions);
+                    }
                 }
                 this.previousCoeffs = newCoeffs;
             }
@@ -171,6 +178,7 @@ public class Physics {
     }
 
     public void setThrottle(double throttle) {
+        this.prevThrottle = throttle;
         this.throttle = throttle;
     }
 
@@ -227,22 +235,32 @@ public class Physics {
          * vector will be sparse Vector x = solver.solve(b,
          * LinearAlgebra.SPARSE_FACTORY);
          */
-        Matrix a = new Basic1DMatrix(new double[][] {
-                { current[0], current[1] }, { previous[0], current[1] } });
+        // Matrix a = new Basic1DMatrix(new double[][] {
+
+        Matrix a = new CRSMatrix(new double[][] { { current[0], current[1] },
+                { previous[0], current[1] } });
         Vector b = new BasicVector(new double[] { current[2], previous[2] });
 
-        // System.out.println("CURRENT: " + current[0] + " " + current[1] + " "
-        // + current[2]);
-        // System.out.println("PREVIOUS: " + previous[0] + " " + previous[1] +
-        // " "
-        // + previous[2]);
+        System.out.println("CURRENT: " + current[0] + " " + current[1] + " "
+                + current[2]);
+        System.out.println("PREVIOUS: " + previous[0] + " " + previous[1] + " "
+                + previous[2]);
         // System.out.flush();
         // System.out.println(b);
-        LinearSystemSolver solver = a.withSolver(LinearAlgebra.LEAST_SQUARES);
+        // LinearSystemSolver solver =
+        // a.withSolver(LinearAlgebra.LEAST_SQUARES);
+        LinearSystemSolver solver = a
+                .withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION);
+        // LinearSystemSolver solver =
+        // a.withSolver(LinearAlgebra.LEAST_SQUARES);
 
-        Vector x = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
-
-        return x;
+        try {
+            Vector x = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
+            return x;
+        } catch (IllegalArgumentException e) {
+            // probably matrix values to close or such, whatever
+            return null;
+        }
     }
 
     protected void addNewestSolutionToApproximation(Vector x) {
