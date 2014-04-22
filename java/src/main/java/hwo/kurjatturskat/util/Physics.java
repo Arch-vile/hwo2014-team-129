@@ -23,17 +23,22 @@ public class Physics {
     private TrackLanes[] lanes;
 
     /**
+     * Needed for trigonometry and stuff.
+     */
+    private double carLength;
+    private double flagPosition;
+
+    /**
      * Current speed.
      */
     private double speed;
+    private double speedDelta;
+    private double acceleration;
 
     private double carAngle;
-
-    private double speedDelta;
-
     private double carAngleDelta;
-
-    private double acceleration;
+    private double carAngleSpeed;
+    private double carAngleAcceleration;
 
     /**
      * Throttle set by driver.
@@ -57,6 +62,10 @@ public class Physics {
      */
     private double approxDrag;
 
+    private double approxCarAngleFriction;
+
+    private int approxCarAngleFrictionCount = 0;
+
     /**
      * How many datasets have we in our approximated drag and rolling friction.
      */
@@ -67,31 +76,6 @@ public class Physics {
      * coefficients to nice values.
      */
     private double enginePower = 1;
-
-    /**
-     * Equation group of the linear equations for solving rolling friction and
-     * drag coefficients.
-     * 
-     * Ax=C
-     * 
-     * // The coefficient matrix 'a' is a CRS (Compressed Row Storage) matrix
-     * Matrix a = new CRSMatrix(new double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0,
-     * 6.0 }, { 7.0, 8.0. 9.0 } });
-     * 
-     * // A right hand side vector, which is simple dense vector Vector b = new
-     * BasicVector(new double[] { 1.0, 2.0, 3.0 });
-     * 
-     * // We will use standard Forward-Back Substitution method, // which is
-     * based on LU decomposition and can be used with square systems
-     * LinearSystemSolver solver =
-     * a.withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION); // The 'x' vector
-     * will be sparse Vector x = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
-     */
-    private Matrix prevCRS;
-
-    private Vector prevB;
-
-    private double[] dragAndFrictionMatrixC = new double[2];
 
     /**
      * Here we store the previous steps (v(t))^2, -v(t) and a(t)-T(t) values.
@@ -116,24 +100,38 @@ public class Physics {
             this.carAngle = position.carAngle;
             if (position.gameTick == 0) {
                 this.speed = 0.0;
+                this.carAngleSpeed = 0.0;
             } else {
                 this.speed = position.inPieceDistance / position.gameTick;
             }
             this.speedDelta = this.speed;
-            this.carAngleDelta = position.carAngle;
+            this.carAngleDelta = this.carAngle;
         } else {
             TrackLanes lane = this
                     .getLane(this.previousPosition.lane.endLaneIndex);
             double distance = TrackUtils.getDistance(this.previousPosition,
                     position, lane);
             int tickDiff = position.gameTick - this.previousPosition.gameTick;
+
             double newSpeed = distance / tickDiff;
             this.speedDelta = newSpeed - this.speed;
             this.speed = newSpeed;
             this.acceleration = this.speedDelta / tickDiff;
+
             double carAngle = position.carAngle;
             this.carAngleDelta = carAngle - this.carAngle;
-            this.carAngle = position.carAngle;
+            this.carAngleSpeed = this.carAngleDelta / tickDiff;
+            this.carAngleAcceleration = this.carAngleSpeed / tickDiff;
+            this.carAngle = carAngle;
+
+            double carAngleFriction = this.calculateCarAngleFriction(
+                    this.carAngleSpeed, this.speed, this.carAngle,
+                    this.carAngleAcceleration);
+
+            if (carAngleFriction != 0.0) {
+                // add to our averaging
+                this.addNewestCarAngleFriction(carAngleFriction);
+            }
 
             // should we have previous throttle?
             double[] newCoeffs = { Math.pow(newSpeed, 2) / 2, -1 * newSpeed,
@@ -173,8 +171,8 @@ public class Physics {
         return this.acceleration;
     }
 
-    public double getCarAngleDelta() {
-        return this.carAngleDelta;
+    public double getCarAngleAcceleration() {
+        return this.carAngleAcceleration;
     }
 
     public void setThrottle(double throttle) {
@@ -198,6 +196,10 @@ public class Physics {
         return this.approxRollingFriction;
     }
 
+    public double getApproxCarAngleFriction() {
+        return this.approxCarAngleFriction;
+    }
+
     private TrackLanes getLane(int index) {
         for (TrackLanes lane : this.lanes) {
             if (index == lane.index) {
@@ -205,6 +207,43 @@ public class Physics {
             }
         }
         return null;
+    }
+
+    private double getAngleAsRadians(double angle) {
+        return angle / 360 * 2 * Math.PI;
+    }
+
+    /**
+     * We calculate car angle friction for given values.
+     * 
+     * It slows down the angle acceleration from what would be expected without
+     * friction.
+     * 
+     * @param angleSpeed
+     * @param carSpeed
+     * @param angle
+     * @param angleAcceleration
+     * @return
+     */
+    private double calculateCarAngleFriction(double angleSpeed,
+            double carSpeed, double angle, double angleAcceleration) {
+        // if we have no valid values for friction calculation we abort
+        if (angle == 0 && angleSpeed == 0 && angleAcceleration == 0) {
+            // abort, we have no information to calculate from
+            return 0.0;
+        }
+        // All to radians
+        // required as positive for trigs
+        double radianAngle = this.getAngleAsRadians(Math.abs(angle));
+
+        double radianAngleAcc = Math.abs(angleAcceleration) / 360 * 2 * Math.PI;
+        double radianAngleSpeed = this.getAngleAsRadians(Math.abs(angleSpeed));
+
+        double frictionConstant = radianAngleSpeed
+                - ((carSpeed * Math.sin(radianAngle)) / (this.carLength - this.flagPosition))
+                - radianAngleAcc;
+
+        return frictionConstant;
     }
 
     /**
@@ -261,6 +300,18 @@ public class Physics {
             // probably matrix values to close or such, whatever
             return null;
         }
+    }
+
+    private void addNewestCarAngleFriction(double carAngleFriction) {
+        if (this.dataSetCount == 0) {
+            this.approxCarAngleFriction = carAngleFriction;
+        } else {
+            int newCount = this.approxCarAngleFrictionCount + 1;
+            this.approxCarAngleFriction = (this.approxCarAngleFriction
+                    * this.approxCarAngleFrictionCount + carAngleFriction)
+                    / newCount;
+        }
+        this.approxCarAngleFrictionCount++;
     }
 
     protected void addNewestSolutionToApproximation(Vector x) {
