@@ -11,6 +11,7 @@ import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.advanced.CreateRaceMsg;
+import hwo.kurjatturskat.core.message.advanced.JoinRaceMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
@@ -31,12 +32,16 @@ public class BotRunner {
     private final String botName;
     private final String botKey;
     private final String track;
+    private final String operation;
+    private final int cars;
+    private final String password;
     private String gameId;
 
     private World world;
 
     public BotRunner(MessageReceiver receiver, MessageSender sender,
-            Driver driver, String botName, String botKey, String track) {
+            Driver driver, String botName, String botKey, String track,
+            String operation, int cars, String password) {
         this.receiver = receiver;
         this.sender = sender;
         this.driver = driver;
@@ -45,20 +50,15 @@ public class BotRunner {
         this.track = track;
         this.world = new World();
         this.gameId = "";
+        this.operation = operation;
+        this.cars = cars;
+        this.password = password;
     }
 
     public void run() throws Throwable {
 
         initializeSequence();
         PlotterView plotter = new PlotterView(world);
-
-        // this.sender.sendMessage(new JoinRaceMsg(this.botName, this.botKey,
-        // this.track, "topsecret", 1));
-
-        // this.sender.sendMessage(new JoinRaceMsg("driver2", this.botKey,
-        // this.track, "topsecret", 1));
-
-        // this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
 
         Message<?> message = null;
 
@@ -103,8 +103,18 @@ public class BotRunner {
     }
 
     private void initializeSequence() throws IOException {
-        this.sender.sendMessage(new CreateRaceMsg(this.botName, this.botKey,
-                this.track, "topsecret", 1));
+        if (this.operation.equals("create")) {
+            System.out.println("Create new race @" + this.track + ", cars: "
+                    + this.cars);
+            this.sender.sendMessage(new CreateRaceMsg(this.botName,
+                    this.botKey, this.track, this.password, this.cars));
+
+        } else if (this.operation.equals("join")) {
+            System.out.println("Join race @" + this.track + ", cars: "
+                    + this.cars);
+            this.sender.sendMessage(new JoinRaceMsg(this.botName, this.botKey,
+                    this.track, this.password, this.cars));
+        }
 
         YourCarMsg yourCarMsg = (YourCarMsg) waitForMsg(MessageType.yourCar);
         updateWorld(yourCarMsg);
@@ -148,7 +158,9 @@ public class BotRunner {
             break;
         case carPositions:
             this.world.update((CarPositionsMsg) message);
-            this.gameId = ((CarPositionsMsg) message).gameId;
+            if (!this.gameId.equals("")) {
+                this.gameId = ((CarPositionsMsg) message).gameId;
+            }
             break;
         case gameInit:
             this.world.update((GameInitMsg) message);
@@ -180,9 +192,14 @@ public class BotRunner {
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
         String botKey = args[3];
-        String track = "germany";
-        if (args.length == 5) {
-            track = args[4];
+        String track = args[4];
+        String operation = "join";
+        int cars = 1;
+        String password = "topsecret";
+        if (args.length > 5) {
+            operation = args[5];
+            cars = Integer.parseInt(args[6]);
+            password = args[7];
         }
 
         System.out.println("Connecting to " + host + ":" + port + " as "
@@ -193,7 +210,8 @@ public class BotRunner {
         // Driver myBot = new MarkusBot();
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
-                new MessageSender(socket), myBot, botName, botKey, track);
+                new MessageSender(socket), myBot, botName, botKey, track,
+                operation, cars, password);
 
         runner.run();
     }
