@@ -36,6 +36,10 @@ public class TrackModel {
         return myCurrentTrackPiece;
     }
 
+    public int getCurrentIndex() {
+        return pieces.getIndex(getCurrent());
+    }
+
     public TrackPieces getNext() {
         return pieces.getNext();
     }

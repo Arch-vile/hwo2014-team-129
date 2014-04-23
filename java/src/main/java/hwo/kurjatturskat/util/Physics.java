@@ -17,6 +17,8 @@ import org.la4j.vector.dense.BasicVector;
  */
 public class Physics {
 
+    private DragEstimator dragEstimator;
+
     /**
      * Lanes are needed for calculating the distance in previous lane.
      */
@@ -105,6 +107,7 @@ public class Physics {
      */
     public Physics(TrackLanes[] lanes) {
         this.lanes = lanes;
+        this.dragEstimator = new DragEstimator();
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -138,6 +141,14 @@ public class Physics {
                 tickDiff -= this.previousPosition.gameTick;
 
             double newSpeed = distance / tickDiff;
+
+            this.dragEstimator.estimateDragConstant(newSpeed, this.speed, prevThrottle);
+            double estimatedSpeed = this.dragEstimator
+                    .getSpeedOnNextTickWhenOnZeroThrottle(speed);
+            System.out.println(String.format(
+                    "Expected: %s Got: %s Error perc.: %s", newSpeed,
+                    estimatedSpeed, newSpeed / estimatedSpeed * 100d));
+
             this.speedDelta = newSpeed - this.speed;
             this.speed = newSpeed;
             this.acceleration = this.speedDelta / tickDiff;
