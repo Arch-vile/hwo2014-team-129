@@ -33,6 +33,8 @@ public class MessageReceiver {
         String line;
         while ((line = reader.readLine()) != null) {
 
+            System.out.println(line);
+
             Message<?> msg = gson.fromJson(line, Message.class);
 
             MessageType type = msg.getType() != null ? msg.getType()

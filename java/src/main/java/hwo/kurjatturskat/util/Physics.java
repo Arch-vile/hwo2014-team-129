@@ -116,7 +116,7 @@ public class Physics {
         // do speed calculation
         if (this.previousPosition == null) {
             this.carAngle = position.carAngle;
-            if (position.gameTick == 0) {
+            if (position.gameTick == null || position.gameTick == 0) {
                 this.speed = 0.0;
                 this.carAngleSpeed = 0.0;
             } else {
@@ -133,7 +133,9 @@ public class Physics {
             // TODO: approximate coefficients from distance change
             // We use distance sum and distance delta
 
-            int tickDiff = position.gameTick - this.previousPosition.gameTick;
+            long tickDiff = position.gameTick;
+            if (this.previousPosition.gameTick != null)
+                tickDiff -= this.previousPosition.gameTick;
 
             double newSpeed = distance / tickDiff;
             this.speedDelta = newSpeed - this.speed;

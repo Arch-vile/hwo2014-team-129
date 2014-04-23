@@ -1,6 +1,5 @@
 package hwo.kurjatturskat.core.message;
 
-
 public class CrashMsg extends Message<MessageCarData> {
 
     public CrashMsg(MessageCarData data) {

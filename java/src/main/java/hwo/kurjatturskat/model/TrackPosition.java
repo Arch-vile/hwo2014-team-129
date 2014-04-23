@@ -9,7 +9,7 @@ import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
  */
 public class TrackPosition {
 
-    public final int gameTick;
+    public final Long gameTick;
 
     public final int pieceIndex;
 
@@ -21,7 +21,7 @@ public class TrackPosition {
 
     public final double carAngle;
 
-    public TrackPosition(int gameTick, int pieceIndex, double inPieceDistance,
+    public TrackPosition(Long gameTick, int pieceIndex, double inPieceDistance,
             Lane lane, TrackPieces trackPiece, double carAngle) {
         this.gameTick = gameTick;
         this.pieceIndex = pieceIndex;
