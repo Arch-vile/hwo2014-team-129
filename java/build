@@ -2,6 +2,9 @@
 
 source ../config
 
+mvn install:install-file -Dfile=projectRepo/junit/junit/4.11/junit-4.11.jar -DgroupId=junit -DartifactId=junit -Dversion=4.11 -Dpackaging=jar
+mvn install:install-file -Dfile=projectRepo/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar -DgroupId=org.hamcrest -DartifactId=hamcrest-all -Dversion=1.3 -Dpackaging=jar
+mvn install:install-file -Dfile=projectRepo/org/la4j/la4j/0.4.9/la4j-0.4.9.jar -DgroupId=org.la4j -DartifactId=la4j -Dversion=0.4.9 -Dpackaging=jar
 if [ "$BUILD_MODE" == "offline" ]; then
   echo "offline build"
   mvn -B -o package -DskipTests
