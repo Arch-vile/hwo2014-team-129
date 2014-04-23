@@ -6,6 +6,9 @@ import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
+import hwo.kurjatturskat.core.message.gameend.GameEndBestLaps;
+import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
+import hwo.kurjatturskat.core.message.gameend.GameEndResults;
 import hwo.kurjatturskat.core.message.gameinit.CarDimensions;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
@@ -30,10 +33,13 @@ public class World {
 
     public Physics myPhysics;
 
+    private String gameStatus;
+    private GameResults gameResults;
     private LapResults lapResults;
 
     public World() {
-
+        this.gameStatus = "";
+        this.gameResults = null;
     }
 
     public void update(CarPositionsMsg msg) {
@@ -90,6 +96,11 @@ public class World {
         }
 
         this.lapResults = new LapResults(message.getData().race.raceSession);
+        if (message.getData().race.raceSession.isQualifying()) {
+            this.gameStatus = "Qualifying";
+        } else {
+            this.gameStatus = "Race";
+        }
     }
 
     public void update(LapFinishedMsg message) {
@@ -97,6 +108,22 @@ public class World {
             this.lapResults.lapFinished(message.getData());
         }
 
+    }
+
+    public void update(GameEndMsg message) {
+        this.gameResults = new GameResults(message.getData());
+        System.out.println("");
+        System.out.println(this.gameStatus + " end!");
+        for (GameEndResults res : this.gameResults.getGameEndResults()) {
+            System.out.println(res.car.name + "/" + res.car.color + " Laps: "
+                    + res.result.laps + " Time: " + res.result.getRaceTime());
+        }
+        System.out.println("Best lap times!");
+        for (GameEndBestLaps res : this.gameResults.getGameEndBestLaps()) {
+            System.out.println(res.car.name + "/" + res.car.color + " Lap: "
+                    + res.result.lap + " @ " + res.result.getLapTime());
+        }
+        System.out.println("");
     }
 
     public void setMyCarId(CarIdentifier carId) {

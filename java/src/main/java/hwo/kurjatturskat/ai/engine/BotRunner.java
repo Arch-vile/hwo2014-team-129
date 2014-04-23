@@ -12,6 +12,7 @@ import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
 import hwo.kurjatturskat.core.message.advanced.CreateRaceMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
@@ -164,6 +165,10 @@ public class BotRunner {
         case lapFinished:
             this.world.update((LapFinishedMsg) message);
             break;
+        case gameEnd:
+            this.world.update((GameEndMsg) message);
+            break;
+
         default:
             break;
         }
