@@ -85,7 +85,7 @@ public class World {
         this.myPhysics = new Physics(this.lanes);
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
-            CarIdentifier car = carDimensions.car;
+            CarIdentifier car = carDimensions.id;
             System.out.println("CAR: " + car);
             if (car != null && car.color.equals(this.myCar.color)) {
                 this.myPhysics.setCarDimensions(
