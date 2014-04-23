@@ -35,4 +35,11 @@ public class TrackPosition {
         return trackPiece;
     }
 
+    @Override
+    public String toString() {
+        return String
+                .format("gameTick[%s] pieceIndex[%s] inPieceDistance[%s] lane[%s] trackPiece[%s] carAngle[%s]",
+                        gameTick, pieceIndex, inPieceDistance, lane,
+                        trackPiece, carAngle);
+    }
 }
