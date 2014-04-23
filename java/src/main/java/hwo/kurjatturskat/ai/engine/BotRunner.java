@@ -3,6 +3,7 @@ package hwo.kurjatturskat.ai.engine;
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.MarkusBot;
 import hwo.kurjatturskat.core.message.CrashMsg;
+import hwo.kurjatturskat.core.message.LaunchTurboMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
@@ -17,6 +18,7 @@ import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
 import hwo.kurjatturskat.visualization.PlotterView;
@@ -71,6 +73,7 @@ public class BotRunner {
             updateWorld(message);
             plotter.plot();
 
+            // TODO: clean up
             if (world.isInitialized()) {
                 String direction = this.driver.getLane(world);
                 if (direction != null) {
@@ -86,15 +89,25 @@ public class BotRunner {
                     }
                 }
 
+                Boolean turbo = this.driver.launchTurbo(world);
+                if (turbo != null) {
+                    this.sender.sendMessage(new LaunchTurboMsg());
+                    world.clearTurbo();
+                }
+
+                // TODO: change the behavirous not to flooed with thorttle messages if there is no need to change. Send the ping instead if required
                 Double throttle = this.driver.getThrottle(world);
-                // Let's update physics with throttle
-                world.myPhysics.setThrottle(throttle);
+                if (throttle != null) {
+                    // Let's update physics with throttle
+                    world.myPhysics.setThrottle(throttle);
 
-                // Let's check what physics think about coefficients
-                System.out.println("Angle Friction: "
-                        + world.myPhysics.getApproxCarAngleFriction());
+                    // Let's check what physics think about coefficients
+                    //                    System.out.println("Angle Friction: "
+                    //                            + world.myPhysics.getApproxCarAngleFriction());
 
-                this.sender.sendMessage(new ThrottleMsg(throttle));
+                    this.sender.sendMessage(new ThrottleMsg(throttle));
+                }
+
             }
         }
 
@@ -179,6 +192,9 @@ public class BotRunner {
             break;
         case gameEnd:
             this.world.update((GameEndMsg) message);
+            break;
+        case turboAvailable:
+            this.world.update((TurboAvailableMsg) message);
             break;
 
         default:

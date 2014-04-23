@@ -255,9 +255,6 @@ public class Physics {
             return 0.0;
         }
 
-        System.out.println("Anglestuff: " + angleSpeed + " " + carSpeed + " "
-                + angle + " " + angleAcceleration);
-
         // All to radians
         // required as positive for trigs
         double radianAngle = this.getAngleAsRadians(Math.abs(angle));

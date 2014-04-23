@@ -4,6 +4,7 @@ import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 
 import java.io.BufferedReader;
@@ -65,6 +66,9 @@ public class MessageReceiver {
 
             case lapFinished:
                 return gson.fromJson(line, LapFinishedMsg.class);
+
+            case turboAvailable:
+                return gson.fromJson(line, TurboAvailableMsg.class);
 
             case tournamentEnd:
                 return msg;

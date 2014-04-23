@@ -18,6 +18,7 @@ public class TrackPieces {
         this.isSwitch = isSwitch;
     }
 
+    // TODO: add isStraight
     public boolean isCurve() {
         return this.angle != null;
     }

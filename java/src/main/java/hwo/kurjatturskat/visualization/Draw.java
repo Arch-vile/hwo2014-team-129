@@ -46,8 +46,7 @@ public class Draw {
         }
 
         plotCar(g);
-        plotSpeed();
-        plotLapTimes();
+        plotStats();
 
         plotStatusBoard(g);
 
@@ -76,7 +75,7 @@ public class Draw {
     private void plotStatusBoard(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(15, maxPlottedYCoord + 30, 300, 200);
-        g.setColor(Color.RED);
+        g.setColor(Color.GREEN);
         int i = 0;
         for (String line : this.statusBoard.toString().split("\n")) {
             g.drawString(line, 20, maxPlottedYCoord + 45 + i * 15);
@@ -84,7 +83,7 @@ public class Draw {
         }
     }
 
-    public void plotSpeed() {
+    public void plotStats() {
 
         this.statusBoard.append(String.format("Lap: %s/%s\n", world
                 .getLapResults().getLaps().size() + 1, world.getLapResults()
@@ -97,8 +96,14 @@ public class Draw {
                 .append(String.format("Speed: %s\n", world.getMySpeed()));
         this.statusBoard.append(String.format("Record speed: %s\n",
                 world.getMyRecordSpeed()));
+
+        plotLapTimes();
+
+        this.statusBoard.append("\nTurbo available: "
+                + (world.getTurbo() == null ? "NO" : "YES"));
     }
 
+    // TODO: plot -> append
     private void plotLapTimes() {
 
         for (int i = 0; i < this.world.getLapResults().getRaceSession().laps; i++) {

@@ -2,6 +2,7 @@ package hwo.kurjatturskat.ai.drivers;
 
 import hwo.kurjatturskat.ai.behaviours.spec.LaneBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
+import hwo.kurjatturskat.ai.behaviours.spec.TurboBehaviour;
 import hwo.kurjatturskat.model.World;
 
 import java.util.ArrayList;
@@ -11,10 +12,12 @@ public class Driver {
 
     private List<ThrottleBehaviour> throttleBehaviours;
     private List<LaneBehaviour> laneBehaviours;
+    private List<TurboBehaviour> turboBehaviours;
 
     public Driver() {
         this.throttleBehaviours = new ArrayList<>();
         this.laneBehaviours = new ArrayList<>();
+        this.turboBehaviours = new ArrayList<>();
     }
 
     protected void addThrottleBehaviour(ThrottleBehaviour behaviour) {
@@ -23,6 +26,10 @@ public class Driver {
 
     protected void addLaneBehaviour(LaneBehaviour behaviour) {
         this.laneBehaviours.add(behaviour);
+    }
+
+    protected void addTurboBehaviour(TurboBehaviour behaviour) {
+        this.turboBehaviours.add(behaviour);
     }
 
     public String getLane(World world) {
@@ -40,6 +47,18 @@ public class Driver {
             Double throttle = throttleChooser.getThrottle(world);
             if (throttle != null)
                 return throttle;
+        }
+        return null;
+    }
+
+    public Boolean launchTurbo(World world) {
+        if (world.getTurbo() == null)
+            return null;
+
+        for (TurboBehaviour turboChooser : this.turboBehaviours) {
+            Boolean turbo = turboChooser.launchTurbo(world);
+            if (Boolean.TRUE.equals(turbo))
+                return true;
         }
         return null;
     }

@@ -13,6 +13,8 @@ import hwo.kurjatturskat.core.message.gameinit.CarDimensions;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turboavailable.TurboAvailable;
+import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.util.Physics;
 
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class World {
     private String gameStatus;
     private GameResults gameResults;
     private LapResults lapResults;
+
+    private TurboAvailable turbo;
 
     public World() {
         this.gameStatus = "";
@@ -110,6 +114,11 @@ public class World {
 
     }
 
+    // TODO: move all the non update stuff away
+    public void update(TurboAvailableMsg message) {
+        this.turbo = message.getData();
+    }
+
     public void update(GameEndMsg message) {
         this.gameResults = new GameResults(message.getData());
         System.out.println("");
@@ -124,6 +133,10 @@ public class World {
                     + res.result.lap + " @ " + res.result.getLapTime());
         }
         System.out.println("");
+    }
+
+    public TurboAvailable getTurbo() {
+        return turbo;
     }
 
     public void setMyCarId(CarIdentifier carId) {
@@ -239,6 +252,10 @@ public class World {
 
     public LapResults getLapResults() {
         return lapResults;
+    }
+
+    public void clearTurbo() {
+        this.turbo = null;
     }
 
 }
