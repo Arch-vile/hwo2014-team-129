@@ -1,7 +1,7 @@
 package hwo.kurjatturskat.ai.engine;
 
-import hwo.kurjatturskat.ai.drivers.ConstantThrottleBot;
 import hwo.kurjatturskat.ai.drivers.Driver;
+import hwo.kurjatturskat.ai.drivers.MarkusBot;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
@@ -205,9 +205,9 @@ public class BotRunner {
         System.out.println("Connecting to " + host + ":" + port + " as "
                 + botName + "/" + botKey + " @ " + track);
 
-        Driver myBot = new ConstantThrottleBot(0.9);
+        //Driver myBot = new ConstantThrottleBot(0.9);
         // Driver myBot = new SlowBot();
-        // Driver myBot = new MarkusBot();
+        Driver myBot = new MarkusBot();
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
                 new MessageSender(socket), myBot, botName, botKey, track,

@@ -1,23 +1,11 @@
 package hwo.kurjatturskat.ai.drivers;
 
-import hwo.kurjatturskat.model.World;
+import hwo.kurjatturskat.ai.behaviours.throttle.ConstantThrottleBehaviour;
 
-public class ConstantThrottleBot implements Driver {
-
-    private double throttle = -1;
+public class ConstantThrottleBot extends Driver {
 
     public ConstantThrottleBot(double throttle) {
-        this.throttle = throttle;
-    }
-
-    @Override
-    public double getThrottle(World world) {
-        return this.throttle;
-    }
-
-    @Override
-    public String getLane(World world) {
-        return null;
+        this.addThrottleBehaviour(new ConstantThrottleBehaviour(0.5));
     }
 
 }
