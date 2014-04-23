@@ -1,19 +1,28 @@
 package hwo.kurjatturskat.util;
 
+import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+
 public class DragEstimator {
 
     // Drag constant
     private Double D;
 
-    public void estimateDragConstant(double currentSpeed, double lastSpeed,
-            double lastThrottle) {
-        if (D == null) {
-            // Make sure we have the situation we wanted i.e no throttle and slowing
-            if (lastThrottle == 0 && currentSpeed < lastSpeed) {
-                D = estimateDragConstant(currentSpeed, lastSpeed);
-                System.out.println("Estimated drag constant:" + D);
-            }
+    private DragEstimateBehaviour dragDataSampler;
+
+    public DragEstimator(DragEstimateBehaviour dragDataSampler) {
+        this.dragDataSampler = dragDataSampler;
+    }
+
+    public Double estimateDragConstant() {
+        if (dragDataSampler.samplesReady() && D == null) {
+            double[] samplesOnZeroThrottle = dragDataSampler
+                    .getSpeedSamplesOnZeroThrottle();
+            D = estimateDragConstant(samplesOnZeroThrottle[1],
+                    samplesOnZeroThrottle[0]);
+            System.out.println("Estimated drag constant:" + D);
         }
+
+        return D;
     }
 
     public double estimateDragConstant(double currentSpeed, double lastSpeed) {
@@ -81,6 +90,10 @@ public class DragEstimator {
 
     public Double getD() {
         return D;
+    }
+
+    public boolean estimateDone() {
+        return this.D != null;
     }
 
 }

@@ -10,7 +10,7 @@ import org.la4j.vector.dense.BasicVector;
 
 public class PhysicsTest {
 
-    Physics physics = new Physics(null);
+    Physics physics = new Physics(null, null);
 
     @Before
     public void setup() {

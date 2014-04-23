@@ -1,5 +1,6 @@
 package hwo.kurjatturskat.util;
 
+import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.model.TrackPosition;
 
@@ -105,9 +106,9 @@ public class Physics {
      * 
      * @param lanes
      */
-    public Physics(TrackLanes[] lanes) {
+    public Physics(TrackLanes[] lanes, DragEstimateBehaviour dragDataSampler) {
         this.lanes = lanes;
-        this.dragEstimator = new DragEstimator();
+        this.dragEstimator = new DragEstimator(dragDataSampler);
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -116,6 +117,8 @@ public class Physics {
     }
 
     public void addTrackPosition(TrackPosition position) {
+        this.dragEstimator.estimateDragConstant();
+
         // do speed calculation
         if (this.previousPosition == null) {
             this.carAngle = position.carAngle;
@@ -141,13 +144,6 @@ public class Physics {
                 tickDiff -= this.previousPosition.gameTick;
 
             double newSpeed = distance / tickDiff;
-
-            this.dragEstimator.estimateDragConstant(newSpeed, this.speed, prevThrottle);
-            double estimatedSpeed = this.dragEstimator
-                    .getSpeedOnNextTickWhenOnZeroThrottle(speed);
-            System.out.println(String.format(
-                    "Expected: %s Got: %s Error perc.: %s", newSpeed,
-                    estimatedSpeed, newSpeed / estimatedSpeed * 100d));
 
             this.speedDelta = newSpeed - this.speed;
             this.speed = newSpeed;
