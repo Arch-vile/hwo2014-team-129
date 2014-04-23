@@ -31,6 +31,17 @@ public class Physics {
     private double flagPosition = 10.0;
 
     /**
+     * Distance sum.
+     * 
+     * This should be zeroed at every crash and spawn.
+     */
+    private double distanceSum = 0.0;
+
+    private double prevDistanceSum = 0.0;
+
+    private double distanceDelta;
+
+    /**
      * Current speed.
      */
     private double speed;
@@ -109,7 +120,7 @@ public class Physics {
                 this.speed = 0.0;
                 this.carAngleSpeed = 0.0;
             } else {
-                this.speed = position.inPieceDistance / position.gameTick;
+                this.speed = position.inPieceDistance / position.gameTick; // lies
             }
             this.speedDelta = this.speed;
             this.carAngleDelta = this.carAngle;
@@ -118,6 +129,10 @@ public class Physics {
                     .getLane(this.previousPosition.lane.endLaneIndex);
             double distance = TrackUtils.getDistance(this.previousPosition,
                     position, lane);
+            this.distanceSum += distance;
+            // TODO: approximate coefficients from distance change
+            // We use distance sum and distance delta
+
             int tickDiff = position.gameTick - this.previousPosition.gameTick;
 
             double newSpeed = distance / tickDiff;
