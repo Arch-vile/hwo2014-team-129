@@ -38,7 +38,7 @@ public class FastOnStraightBehaviour implements ThrottleBehaviour {
         if (!world.getTrackModel().getCurrent().isCurve()) {
             if (lastThrottle != 0.8) {
                 System.out.println("We are on straight. Step on it!");
-                printNextCurveData(world);
+                // printNextCurveData(world);
             }
             lastThrottle = 0.8;
             return 0.8;
