@@ -34,10 +34,12 @@ public class DragTest {
 
         double recordedData3[] = { 2.2121096566165597, 2.167867463484229 };
 
-        double K = estimateK(recordedData[2], recordedData[1]);
-        System.out.println("\n\nEstimated K: " + K);
-        estimateK(recordedData[4], recordedData[3]);
-        System.out.println("\n\nEstimated K: " + K);
+        DragTest test = new DragTest();
+
+        double K = test.estimateK(recordedData[2], recordedData[1]);
+        System.out.println("Estimated K: " + K + "\n\n");
+        test.estimateK(recordedData[4], recordedData[3]);
+        System.out.println("Estimated K: " + K);
 
         double estimated;
         estimated = getSpeedOnNextTickWhenOnZeroThrottle(K, recordedData[0]);
@@ -57,41 +59,55 @@ public class DragTest {
         System.out.println("Got:\t\t\t" + estimated);
     }
 
-    public static double estimateK(double target, double lastSpeed) {
-        double K = 0;
-        double lastError = 10000;
-        long iterations = 0;
+    // We assume K >= 0 !!!
+    public double estimateK(double target, double lastSpeed) {
+        double lowerLimit = 0;
+        double upperLimit = determineMaxK(target, lastSpeed);
+
+        int count = 0;
         while (true) {
+            double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
+            System.out.println(lowerLimit + " -- " + upperLimit + " ::: "
+                    + middle);
+            count++;
 
-            double result = getSpeedOnNextTickWhenOnZeroThrottle(K, lastSpeed);
-            double error = Math.abs(result - target);
+            double errorOnLowerLimit = Math
+                    .abs(getSpeedOnNextTickWhenOnZeroThrottle(lowerLimit,
+                            lastSpeed) - target);
+            double errorOnUpperLimit = Math
+                    .abs(getSpeedOnNextTickWhenOnZeroThrottle(upperLimit,
+                            lastSpeed) - target);
+            double errorOnMiddle = Math
+                    .abs(getSpeedOnNextTickWhenOnZeroThrottle(middle, lastSpeed)
+                            - target);
 
-            if (error < 0.000001) {
-                System.out.println("Iteration: " + iterations);
-                System.out.println("Target: " + target);
-                System.out.println("Result: " + result);
-                System.out.println("Error: " + error);
-                System.out.println("K: " + K);
-                break;
-            }
-
-            if (error < lastError) {
-                lastError = error;
+            if (errorOnUpperLimit < errorOnLowerLimit) {
+                lowerLimit = middle;
             } else {
-                System.out.println("Got worse result. Exit");
-                System.out.println("Iteration: " + iterations);
-                System.out.println("Target: " + target);
-                System.out.println("Result: " + result);
-                System.out.println("Error: " + error);
-                System.out.println("K: " + K);
-                break;
+                upperLimit = middle;
             }
 
-            K += 0.0000005;
-            iterations++;
+            if (errorOnMiddle < 0.00001) {
+                System.out.println("iteratiosns: " + count);
+                return middle;
+            }
+
+        }
+    }
+
+    private double determineMaxK(double target, double lastSpeed) {
+        double minK = 0;
+        double errorWithMinK = Math.abs(getSpeedOnNextTickWhenOnZeroThrottle(
+                minK, lastSpeed) - target);
+        double step = 1;
+        for (double k = step;; k += step) {
+            double estimatedSpeed = getSpeedOnNextTickWhenOnZeroThrottle(k,
+                    lastSpeed);
+            double error = Math.abs(estimatedSpeed - target);
+            if (error >= errorWithMinK)
+                return k;
         }
 
-        return K;
     }
 
     public static double getSpeedOnNextTickWhenOnZeroThrottle(double K,
