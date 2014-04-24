@@ -9,6 +9,7 @@ import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
 import hwo.kurjatturskat.core.message.MessageSender;
 import hwo.kurjatturskat.core.message.MessageType;
+import hwo.kurjatturskat.core.message.PingMsg;
 import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.SwitchLaneMsg;
 import hwo.kurjatturskat.core.message.ThrottleMsg;
@@ -83,11 +84,14 @@ public class BotRunner {
 
             // TODO: clean up
             if (world.isInitialized()) {
+                boolean sendPing = true;
+
                 String direction = this.driver.getLane(world);
                 if (direction != null) {
                     if (!switchSent) {
                         this.sender.sendMessage(new SwitchLaneMsg(direction));
                         switchSent = true;
+                        sendPing = false;
                         continue;
                     } else if (!nextLaneSelectionPoint.equals(world
                             .getTrackModel().getNextSwitch())) {
@@ -100,6 +104,7 @@ public class BotRunner {
                 Boolean turbo = this.driver.launchTurbo(world);
                 if (turbo != null) {
                     this.sender.sendMessage(new LaunchTurboMsg());
+                    sendPing = false;
                     world.clearTurbo();
                 }
 
@@ -116,6 +121,12 @@ public class BotRunner {
                     // + world.myPhysics.getApproxCarAngleFriction());
 
                     this.sender.sendMessage(new ThrottleMsg(throttle));
+                    sendPing = false;
+                }
+
+                // Send ping message to server if nothing else is sent.
+                if (sendPing) {
+                    this.sender.sendMessage(new PingMsg());
                 }
 
             }
