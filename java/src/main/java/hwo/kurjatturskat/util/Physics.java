@@ -139,7 +139,10 @@ public class Physics {
             // TODO: approximate coefficients from distance change
             // We use distance sum and distance delta
 
-            long tickDiff = position.gameTick;
+            long tickDiff = 0;
+            if (position.gameTick != null) {
+                tickDiff = position.gameTick;
+            }
             if (this.previousPosition.gameTick != null)
                 tickDiff -= this.previousPosition.gameTick;
 
