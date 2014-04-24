@@ -94,7 +94,6 @@ public class World {
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
             CarIdentifier car = carDimensions.id;
-            System.out.println("CAR: " + car);
             if (car != null && car.color.equals(this.myCar.color)) {
                 this.myPhysics.setCarDimensions(
                         carDimensions.dimensions.length,
