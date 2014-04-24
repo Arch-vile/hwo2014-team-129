@@ -52,7 +52,19 @@ public class DragEstimateBehaviour implements ThrottleBehaviour {
         return samplesOnZeroThrottle;
     }
 
+    public double[] getSpeedSamplesOnFullThrottle() {
+        double[] samplesOnFullThrottle = new double[] {
+                this.speedPerTickOnFullThrottle.get(1),
+                this.speedPerTickOnFullThrottle.get(2) };
+        return samplesOnFullThrottle;
+    }
+
     public List<Double> getRecorededValuesOnZeroThrottle() {
         return this.speedPerTickOnZeroThrottle;
     }
+
+    public List<Double> getRecorededValuesOnFullThrottle() {
+        return this.speedPerTickOnFullThrottle;
+    }
+
 }
