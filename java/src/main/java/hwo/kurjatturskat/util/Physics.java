@@ -100,6 +100,8 @@ public class Physics {
      */
     private double[] previousCoeffs = new double[3];
 
+    private AccelerationEstimator accelerationEstimator;
+
     /**
      * The track lanes are required so we know the distances from center.
      * TrackUtils need lane information for distance calculation.
@@ -109,6 +111,8 @@ public class Physics {
     public Physics(TrackLanes[] lanes, DragEstimateBehaviour dragDataSampler) {
         this.lanes = lanes;
         this.dragEstimator = new DragEstimator(dragDataSampler);
+        this.accelerationEstimator = new AccelerationEstimator(dragDataSampler,
+                dragEstimator);
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -118,6 +122,7 @@ public class Physics {
 
     public void addTrackPosition(TrackPosition position) {
         this.dragEstimator.estimateDragConstant();
+        this.accelerationEstimator.estimateAccelerationConstant();
 
         // do speed calculation
         if (this.previousPosition == null) {

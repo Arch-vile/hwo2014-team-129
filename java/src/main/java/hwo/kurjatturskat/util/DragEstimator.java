@@ -117,11 +117,6 @@ public class DragEstimator {
         return result;
     }
 
-    public double speedDecrease(double timeStep, double speed) {
-        double result = -1 * D * speed * timeStep;
-        return result;
-    }
-
     public Double getD() {
         return D;
     }
