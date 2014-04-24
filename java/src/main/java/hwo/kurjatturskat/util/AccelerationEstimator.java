@@ -81,12 +81,12 @@ public class AccelerationEstimator {
     private double getSpeedOnNextTickWhenOnFullThrottle(double K,
             double startSpeed) {
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+
+        double totalTime = DragEstimator.TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedIncrease(timeStep,
+            startSpeedForNextStep += speedIncrease(DragEstimator.TIME_STEP,
                     startSpeedForNextStep, K, 1);
-            totalTime += timeStep;
+            totalTime += DragEstimator.TIME_STEP;
         }
         return startSpeedForNextStep;
     }
@@ -96,12 +96,11 @@ public class AccelerationEstimator {
             return startSpeed;
 
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+        double totalTime = DragEstimator.TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedIncrease(timeStep,
+            startSpeedForNextStep += speedIncrease(DragEstimator.TIME_STEP,
                     startSpeedForNextStep, A, throttle);
-            totalTime += timeStep;
+            totalTime += DragEstimator.TIME_STEP;
         }
         return startSpeedForNextStep;
     }

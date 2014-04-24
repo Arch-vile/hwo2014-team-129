@@ -4,6 +4,8 @@ import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 
 public class DragEstimator {
 
+    public final static double TIME_STEP = 1d / 2000d;
+
     // Drag constant
     private Double D;
 
@@ -76,12 +78,11 @@ public class DragEstimator {
     private double getSpeedOnNextTickWhenOnZeroThrottle(double K,
             double startSpeed) {
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+        double totalTime = TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedDecrease(timeStep,
+            startSpeedForNextStep += speedDecrease(TIME_STEP,
                     startSpeedForNextStep, K);
-            totalTime += timeStep;
+            totalTime += TIME_STEP;
         }
         return startSpeedForNextStep;
     }
@@ -91,12 +92,11 @@ public class DragEstimator {
             return startSpeed;
 
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+        double totalTime = TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedDecrease(timeStep,
+            startSpeedForNextStep += speedDecrease(TIME_STEP,
                     startSpeedForNextStep, D);
-            totalTime += timeStep;
+            totalTime += TIME_STEP;
         }
         return startSpeedForNextStep;
     }
