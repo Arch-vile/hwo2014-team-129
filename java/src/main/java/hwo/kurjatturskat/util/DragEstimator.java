@@ -17,37 +17,71 @@ public class DragEstimator {
         if (dragDataSampler.samplesReady() && D == null) {
             double[] samplesOnZeroThrottle = dragDataSampler
                     .getSpeedSamplesOnZeroThrottle();
-            D = estimateDragConstant(samplesOnZeroThrottle[1],
-                    samplesOnZeroThrottle[0]);
+            D = estimateDragConstant(samplesOnZeroThrottle[0],
+                    samplesOnZeroThrottle[1]);
             System.out.println("Estimated drag constant:" + D);
+            System.out.println("Verifying....");
+
+            for (int i = 0; i < dragDataSampler
+                    .getRecorededValuesOnZeroThrottle().size() - 1; i++) {
+                System.out.println("Expected\t"
+                        + dragDataSampler.getRecorededValuesOnZeroThrottle()
+                                .get(i + 1));
+                System.out.println("Got\t\t"
+                        + getSpeedOnNextTickWhenOnZeroThrottle(dragDataSampler
+                                .getRecorededValuesOnZeroThrottle().get(i)));
+            }
         }
 
         return D;
     }
 
-    public double estimateDragConstant(double currentSpeed, double lastSpeed) {
-        double dragConstant = 0;
-        double lastError = 10000;
+    public double estimateDragConstant(double speedOnFirstTick,
+            double speedOnSecondTick) {
+        double lowerLimit = 0;
+        double upperLimit = determineUpperLimit(speedOnFirstTick,
+                speedOnSecondTick);
+
         while (true) {
+            double errorOnLowerLimit = errorWithEstimatedDrag(speedOnFirstTick,
+                    speedOnSecondTick, lowerLimit);
+            double errorOnUpperLimit = errorWithEstimatedDrag(speedOnFirstTick,
+                    speedOnSecondTick, upperLimit);
 
-            double result = getSpeedOnNextTickWhenOnZeroThrottle(dragConstant,
-                    lastSpeed);
-            double error = Math.abs(result - currentSpeed);
-
-            if (error < 0.000001) {
-                break;
-            }
-
-            if (error < lastError) {
-                lastError = error;
+            double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
+            if (errorOnUpperLimit < errorOnLowerLimit) {
+                lowerLimit = middle;
             } else {
-                break;
+                upperLimit = middle;
             }
 
-            dragConstant += 0.0000005;
-        }
+            double errorOnMiddle = errorWithEstimatedDrag(speedOnFirstTick,
+                    speedOnSecondTick, middle);
+            if (errorOnMiddle < 0.00001) {
+                return middle;
+            }
 
-        return dragConstant;
+        }
+    }
+
+    private double determineUpperLimit(double speedOnFirstTick,
+            double speedOnSecondTick) {
+        double minK = 0;
+        double errorWithMinK = errorWithEstimatedDrag(speedOnFirstTick,
+                speedOnSecondTick, minK);
+        double step = 1;
+        for (double k = step;; k += step) {
+            double error = errorWithEstimatedDrag(speedOnFirstTick,
+                    speedOnSecondTick, k);
+            if (error >= errorWithMinK)
+                return k;
+        }
+    }
+
+    public double errorWithEstimatedDrag(double startSpeed, double targetSpeed,
+            double dragEstimate) {
+        return Math.abs(getSpeedOnNextTickWhenOnZeroThrottle(dragEstimate,
+                startSpeed) - targetSpeed);
     }
 
     private double getSpeedOnNextTickWhenOnZeroThrottle(double K,

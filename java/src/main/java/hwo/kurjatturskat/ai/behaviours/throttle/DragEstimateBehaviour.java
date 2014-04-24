@@ -51,4 +51,8 @@ public class DragEstimateBehaviour implements ThrottleBehaviour {
                 this.speedPerTickOnZeroThrottle.get(2) };
         return samplesOnZeroThrottle;
     }
+
+    public List<Double> getRecorededValuesOnZeroThrottle() {
+        return this.speedPerTickOnZeroThrottle;
+    }
 }
