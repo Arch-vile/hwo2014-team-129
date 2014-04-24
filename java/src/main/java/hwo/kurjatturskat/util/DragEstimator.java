@@ -1,15 +1,15 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 
 public class DragEstimator {
 
     // Drag constant
     private Double D;
 
-    private DragEstimateBehaviour dragDataSampler;
+    private SpeedSampleCollectorBehaviour dragDataSampler;
 
-    public DragEstimator(DragEstimateBehaviour dragDataSampler) {
+    public DragEstimator(SpeedSampleCollectorBehaviour dragDataSampler) {
         this.dragDataSampler = dragDataSampler;
     }
 
@@ -20,17 +20,6 @@ public class DragEstimator {
             D = estimateDragConstant(samplesOnZeroThrottle[0],
                     samplesOnZeroThrottle[1]);
             System.out.println("Estimated drag constant:" + D);
-            System.out.println("Verifying....");
-
-            for (int i = 0; i < dragDataSampler
-                    .getRecorededValuesOnZeroThrottle().size() - 1; i++) {
-                System.out.println("Expected\t"
-                        + dragDataSampler.getRecorededValuesOnZeroThrottle()
-                                .get(i + 1));
-                System.out.println("Got\t\t"
-                        + getSpeedOnNextTickWhenOnZeroThrottle(dragDataSampler
-                                .getRecorededValuesOnZeroThrottle().get(i)));
-            }
         }
 
         return D;
@@ -57,7 +46,7 @@ public class DragEstimator {
 
             double errorOnMiddle = errorWithEstimatedDrag(speedOnFirstTick,
                     speedOnSecondTick, middle);
-            if (errorOnMiddle < 0.00001) {
+            if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
 

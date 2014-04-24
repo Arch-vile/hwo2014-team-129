@@ -1,6 +1,6 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.model.TrackPosition;
 
@@ -108,7 +108,8 @@ public class Physics {
      * 
      * @param lanes
      */
-    public Physics(TrackLanes[] lanes, DragEstimateBehaviour dragDataSampler) {
+    public Physics(TrackLanes[] lanes,
+            SpeedSampleCollectorBehaviour dragDataSampler) {
         this.lanes = lanes;
         this.dragEstimator = new DragEstimator(dragDataSampler);
         this.accelerationEstimator = new AccelerationEstimator(dragDataSampler,
@@ -373,6 +374,14 @@ public class Physics {
                     / newCount;
         }
         this.dataSetCount++;
+    }
+
+    public AccelerationEstimator getAccelerationEstimator() {
+        return accelerationEstimator;
+    }
+
+    public DragEstimator getDragEstimator() {
+        return dragEstimator;
     }
 
 }

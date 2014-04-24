@@ -1,16 +1,16 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 
 public class AccelerationEstimator {
 
     // Acceleration constant
     private Double A;
 
-    private DragEstimateBehaviour dragDataSampler;
+    private SpeedSampleCollectorBehaviour dragDataSampler;
     private DragEstimator dragEstimate;
 
-    public AccelerationEstimator(DragEstimateBehaviour dragDataSampler,
+    public AccelerationEstimator(SpeedSampleCollectorBehaviour dragDataSampler,
             DragEstimator dragEstimate) {
         this.dragDataSampler = dragDataSampler;
         this.dragEstimate = dragEstimate;
@@ -24,17 +24,7 @@ public class AccelerationEstimator {
             A = estimateAccelarationConstant(samplesOnFullThrottle[0],
                     samplesOnFullThrottle[1]);
             System.out.println("Estimated acceleration constant:" + A);
-            System.out.println("Verifying....");
 
-            for (int i = 0; i < dragDataSampler
-                    .getRecorededValuesOnFullThrottle().size() - 1; i++) {
-                System.out.println("Expected\t"
-                        + dragDataSampler.getRecorededValuesOnFullThrottle()
-                                .get(i + 1));
-                System.out.println("Got\t\t"
-                        + getSpeedOnNextTickWhenOnFullThrottle(dragDataSampler
-                                .getRecorededValuesOnFullThrottle().get(i)));
-            }
         }
 
         return A;
@@ -61,7 +51,7 @@ public class AccelerationEstimator {
 
             double errorOnMiddle = errorWithEstimatedAcceleration(
                     speedOnFirstTick, speedOnSecondTick, middle);
-            if (errorOnMiddle < 0.00001) {
+            if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
 
@@ -95,13 +85,13 @@ public class AccelerationEstimator {
         double totalTime = timeStep;
         while (totalTime <= 1) {
             startSpeedForNextStep += speedIncrease(timeStep,
-                    startSpeedForNextStep, K);
+                    startSpeedForNextStep, K, 1);
             totalTime += timeStep;
         }
         return startSpeedForNextStep;
     }
 
-    public double getSpeedOnNextTickWhenOnFullThrottle(double startSpeed) {
+    public double getSpeedOnNextTick(double startSpeed, double throttle) {
         if (A == null)
             return startSpeed;
 
@@ -110,15 +100,16 @@ public class AccelerationEstimator {
         double totalTime = timeStep;
         while (totalTime <= 1) {
             startSpeedForNextStep += speedIncrease(timeStep,
-                    startSpeedForNextStep, A);
+                    startSpeedForNextStep, A, throttle);
             totalTime += timeStep;
         }
         return startSpeedForNextStep;
     }
 
-    private double speedIncrease(double timeStep, double speed, double a) {
-        double result = a * timeStep - this.dragEstimate.getD() * speed
-                * timeStep;
+    private double speedIncrease(double timeStep, double speed, double a,
+            double throttle) {
+        double result = throttle * a * timeStep - this.dragEstimate.getD()
+                * speed * timeStep;
         return result;
     }
 
