@@ -7,7 +7,7 @@ public class CarDimensions {
     public Dimensions dimensions;
 
     public CarDimensions(CarIdentifier car, Dimensions dimensions) {
-        this.id = id;
+        this.id = car;
         this.dimensions = dimensions;
     }
 }
