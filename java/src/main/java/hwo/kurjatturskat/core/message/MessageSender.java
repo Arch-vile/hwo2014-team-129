@@ -20,7 +20,6 @@ public class MessageSender {
     }
 
     public void sendMessage(Message message) {
-        System.out.println(message.toJson());
         writer.println(message.toJson());
         writer.flush();
     }

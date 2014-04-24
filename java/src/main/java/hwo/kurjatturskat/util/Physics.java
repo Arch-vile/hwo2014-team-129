@@ -1,5 +1,6 @@
 package hwo.kurjatturskat.util;
 
+import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.model.TrackPosition;
 
@@ -16,6 +17,8 @@ import org.la4j.vector.dense.BasicVector;
  * @author tommy
  */
 public class Physics {
+
+    private DragEstimator dragEstimator;
 
     /**
      * Lanes are needed for calculating the distance in previous lane.
@@ -103,8 +106,9 @@ public class Physics {
      * 
      * @param lanes
      */
-    public Physics(TrackLanes[] lanes) {
+    public Physics(TrackLanes[] lanes, DragEstimateBehaviour dragDataSampler) {
         this.lanes = lanes;
+        this.dragEstimator = new DragEstimator(dragDataSampler);
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -113,6 +117,8 @@ public class Physics {
     }
 
     public void addTrackPosition(TrackPosition position) {
+        this.dragEstimator.estimateDragConstant();
+
         // do speed calculation
         if (this.previousPosition == null) {
             this.carAngle = position.carAngle;
@@ -138,6 +144,7 @@ public class Physics {
                 tickDiff -= this.previousPosition.gameTick;
 
             double newSpeed = distance / tickDiff;
+
             this.speedDelta = newSpeed - this.speed;
             this.speed = newSpeed;
             this.acceleration = this.speedDelta / tickDiff;

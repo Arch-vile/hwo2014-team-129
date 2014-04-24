@@ -1,5 +1,6 @@
 package hwo.kurjatturskat.model;
 
+import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
 import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.SpawnMsg;
@@ -41,9 +42,12 @@ public class World {
 
     private TurboAvailable turbo;
 
-    public World() {
+    private DragEstimateBehaviour dragDataSampler;
+
+    public World(DragEstimateBehaviour dragDataSampler) {
         this.gameStatus = "";
         this.gameResults = null;
+        this.dragDataSampler = dragDataSampler;
     }
 
     public void update(CarPositionsMsg msg) {
@@ -86,7 +90,7 @@ public class World {
                 message.getData().race.track.id,
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
-        this.myPhysics = new Physics(this.lanes);
+        this.myPhysics = new Physics(this.lanes, this.dragDataSampler);
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
             CarIdentifier car = carDimensions.id;

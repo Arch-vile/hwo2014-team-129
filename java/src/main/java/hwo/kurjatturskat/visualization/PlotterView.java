@@ -65,7 +65,6 @@ public class PlotterView extends JFrame {
             }
 
             locatePiecePosition(previous, current);
-            System.out.println(current);
         }
 
     }
@@ -174,6 +173,7 @@ public class PlotterView extends JFrame {
 
     }
 
+    // TODO: REMOVE
     // private DoublePoint appendCurve(DoublePoint currentPos,
     // TrackPieces pieceToAppend, float rotation) {
     //

@@ -3,6 +3,7 @@ package hwo.kurjatturskat.ai.drivers;
 import hwo.kurjatturskat.ai.behaviours.spec.LaneBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.TurboBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
 import hwo.kurjatturskat.model.World;
 
 import java.util.ArrayList;
@@ -13,9 +14,13 @@ public class Driver {
     private List<ThrottleBehaviour> throttleBehaviours;
     private List<LaneBehaviour> laneBehaviours;
     private List<TurboBehaviour> turboBehaviours;
+    private DragEstimateBehaviour dragEstimateBehaviour;
 
     public Driver() {
         this.throttleBehaviours = new ArrayList<>();
+        dragEstimateBehaviour = new DragEstimateBehaviour();
+        this.throttleBehaviours.add(dragEstimateBehaviour);
+
         this.laneBehaviours = new ArrayList<>();
         this.turboBehaviours = new ArrayList<>();
     }
@@ -61,6 +66,10 @@ public class Driver {
                 return true;
         }
         return null;
+    }
+
+    public DragEstimateBehaviour getDragEstimateBehaviour() {
+        return this.dragEstimateBehaviour;
     }
 
 }

@@ -50,7 +50,7 @@ public class BotRunner {
         this.botName = botName;
         this.botKey = botKey;
         this.track = track;
-        this.world = new World();
+        this.world = new World(driver.getDragEstimateBehaviour());
         this.gameId = "";
         this.operation = operation;
         this.cars = cars;
