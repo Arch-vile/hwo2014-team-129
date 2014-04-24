@@ -38,7 +38,6 @@ public class SlowOnCurvesBehaviour implements ThrottleBehaviour {
         if (world.getTrackModel().getCurrent().isCurve()) {
             if (lastThrottle != 0.1) {
                 System.out.println("Seems like a curve. Lets slow down.");
-                printNextCurveData(world);
             }
             lastThrottle = 0.1;
             return 0.1;
