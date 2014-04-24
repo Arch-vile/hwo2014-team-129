@@ -78,6 +78,22 @@ public class TrackModel {
     }
 
     /*
+     * Get number of switch pieces on track.
+     */
+    public int getSwitchPieceCount() {
+        List<TrackPieces> pieces = this.getAll();
+        int switchCount = 0;
+
+        for (TrackPieces piece : pieces) {
+            if (piece.isSwitch) {
+                switchCount++;
+            }
+        }
+
+        return switchCount;
+    }
+
+    /*
      * Get the next switch piece index starting from given piece (exclusive).
      */
     public TrackPieces getNextSwitchByIndex(TrackPieces from) {
@@ -87,6 +103,20 @@ public class TrackModel {
             this.pieces.advance();
         }
         return this.pieces.getCurrent();
+    }
+
+    /*
+     * Get lanes count on track.
+     */
+    public int getLanesCount() {
+        return lanes.length;
+    }
+
+    /*
+     * Get number of possible routes on track.
+     */
+    public int getRoutesCount() {
+        return (int) Math.pow(this.getLanesCount(), this.getSwitchPieceCount());
     }
 
     public TrackLanes getLane(int index) {

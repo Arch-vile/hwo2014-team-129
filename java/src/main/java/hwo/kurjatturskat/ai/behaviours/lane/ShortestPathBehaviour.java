@@ -19,18 +19,27 @@ public class ShortestPathBehaviour implements LaneBehaviour {
 
         // NOTICE: Only one lane change can be done on switch.
         if (world.isLeftLane() != null) {
-            if (world.getTrackModel().getLaneDistanceBetweenPieces(nSwitch,
-                    nnSwitch, world.isLeftLane()) < myLength) {
+            double leftLength = world.getTrackModel()
+                    .getLaneDistanceBetweenPieces(nSwitch, nnSwitch,
+                            world.isLeftLane());
+            if (leftLength < myLength) {
+                return "Left";
+            } else if (leftLength == myLength
+                    && world.getTrackModel().getNextCurveStart().isCurveLeft()) {
                 return "Left";
             }
         } else if (world.isRightLane() != null) {
-            if (world.getTrackModel().getLaneDistanceBetweenPieces(nSwitch,
-                    nnSwitch, world.isRightLane()) < myLength) {
+            double rightLength = world.getTrackModel()
+                    .getLaneDistanceBetweenPieces(nSwitch, nnSwitch,
+                            world.isRightLane());
+            if (rightLength < myLength) {
+                return "Right";
+            } else if (rightLength == myLength
+                    && world.getTrackModel().getNextCurveStart().isCurveRight()) {
                 return "Right";
             }
         }
 
         return null;
     }
-
 }
