@@ -3,6 +3,7 @@ package hwo.kurjatturskat.ai.engine;
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.MarkusBot;
 import hwo.kurjatturskat.core.message.CrashMsg;
+import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.LaunchTurboMsg;
 import hwo.kurjatturskat.core.message.Message;
 import hwo.kurjatturskat.core.message.MessageReceiver;
@@ -95,15 +96,17 @@ public class BotRunner {
                     world.clearTurbo();
                 }
 
-                // TODO: change the behavirous not to flooed with thorttle messages if there is no need to change. Send the ping instead if required
+                // TODO: change the behavirous not to flooed with thorttle
+                // messages if there is no need to change. Send the ping instead
+                // if required
                 Double throttle = this.driver.getThrottle(world);
                 if (throttle != null) {
                     // Let's update physics with throttle
                     world.myPhysics.setThrottle(throttle);
 
                     // Let's check what physics think about coefficients
-                    //                    System.out.println("Angle Friction: "
-                    //                            + world.myPhysics.getApproxCarAngleFriction());
+                    // System.out.println("Angle Friction: "
+                    // + world.myPhysics.getApproxCarAngleFriction());
 
                     this.sender.sendMessage(new ThrottleMsg(throttle));
                 }
@@ -127,6 +130,9 @@ public class BotRunner {
                     + this.cars);
             this.sender.sendMessage(new JoinRaceMsg(this.botName, this.botKey,
                     this.track, this.password, this.cars));
+        } else if (this.operation.equals("defaultjoin")) {
+            System.out.println("Join race!");
+            this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
         }
 
         YourCarMsg yourCarMsg = (YourCarMsg) waitForMsg(MessageType.yourCar);
@@ -203,25 +209,32 @@ public class BotRunner {
     }
 
     public static void main(String... args) throws Throwable {
+        String track = "";
+        String operation = "defaultjoin";
+        int cars = 1;
+        String password = "topsecret";
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
         String botKey = args[3];
-        String track = args[4];
-        String operation = "join";
-        int cars = 1;
-        String password = "topsecret";
+        if (args.length > 4) {
+            track = args[4];
+        }
         if (args.length > 5) {
             operation = args[5];
+        }
+        if (args.length > 6) {
             cars = Integer.parseInt(args[6]);
+        }
+        if (args.length > 7) {
             password = args[7];
         }
 
         System.out.println("Connecting to " + host + ":" + port + " as "
                 + botName + "/" + botKey + " @ " + track);
 
-        //Driver myBot = new ConstantThrottleBot(0.9);
+        // Driver myBot = new ConstantThrottleBot(0.9);
         // Driver myBot = new SlowBot();
         Driver myBot = new MarkusBot();
         final Socket socket = new Socket(host, port);
