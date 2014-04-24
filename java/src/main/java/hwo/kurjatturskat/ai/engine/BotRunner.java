@@ -42,9 +42,11 @@ public class BotRunner {
 
     private World world;
 
+    private boolean draw;
+
     public BotRunner(MessageReceiver receiver, MessageSender sender,
             Driver driver, String botName, String botKey, String track,
-            String operation, int cars, String password) {
+            String operation, int cars, String password, boolean draw) {
         this.receiver = receiver;
         this.sender = sender;
         this.driver = driver;
@@ -56,12 +58,16 @@ public class BotRunner {
         this.operation = operation;
         this.cars = cars;
         this.password = password;
+        this.draw = draw;
     }
 
     public void run() throws Throwable {
 
         initializeSequence();
-        PlotterView plotter = new PlotterView(world);
+
+        PlotterView plotter = null;
+        if (this.draw)
+            plotter = new PlotterView(world);
 
         Message<?> message = null;
 
@@ -72,7 +78,8 @@ public class BotRunner {
                 && !tournamentEnd(message)) {
 
             updateWorld(message);
-            plotter.plot();
+            if (this.draw)
+                plotter.plot();
 
             // TODO: clean up
             if (world.isInitialized()) {
@@ -209,28 +216,18 @@ public class BotRunner {
     }
 
     public static void main(String... args) throws Throwable {
-        String track = "";
-        String operation = "defaultjoin";
-        int cars = 1;
-        String password = "topsecret";
+        String track = extractArg(args, "track", "");
+        String operation = extractArg(args, "operation", "defaultjoin");
+        int cars = Integer.parseInt(extractArg(args, "cars", "1"));
+        String password = extractArg(args, "password", "topsecret");
+        String draw = extractArg(args, "draw", "no");
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String botName = args[2];
         String botKey = args[3];
-        if (args.length > 4) {
-            track = args[4];
-        }
-        if (args.length > 5) {
-            operation = args[5];
-        }
-        if (args.length > 6) {
-            cars = Integer.parseInt(args[6]);
-        }
-        if (args.length > 7) {
-            password = args[7];
-        }
 
+        System.out.println("Draw: " + draw);
         System.out.println("Connecting to " + host + ":" + port + " as "
                 + botName + "/" + botKey + " @ " + track);
 
@@ -240,8 +237,18 @@ public class BotRunner {
         final Socket socket = new Socket(host, port);
         BotRunner runner = new BotRunner(new MessageReceiver(socket),
                 new MessageSender(socket), myBot, botName, botKey, track,
-                operation, cars, password);
+                operation, cars, password, "yes".equals(draw));
 
         runner.run();
+    }
+
+    private static String extractArg(String[] args, String name, String defaultV) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].contains(name + "=")) {
+                return args[i].substring(args[i].indexOf("=") + 1);
+            }
+        }
+
+        return defaultV;
     }
 }
