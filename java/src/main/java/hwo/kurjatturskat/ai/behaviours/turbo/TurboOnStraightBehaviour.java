@@ -7,8 +7,13 @@ public class TurboOnStraightBehaviour implements TurboBehaviour {
 
     @Override
     public Boolean launchTurbo(World world) {
+
         if (world.getTurbo() != null) {
-            if (!world.getTrackModel().getCurrent().isCurve()) {
+            if (world.getTrackModel().getCurrent().isCurve()
+                    & world.anyoneAheadAndSameLane()) {
+                System.out.println("Somene in front, turbo!");
+                return true;
+            } else if (!world.getTrackModel().getCurrent().isCurve()) {
                 return true;
             }
         }

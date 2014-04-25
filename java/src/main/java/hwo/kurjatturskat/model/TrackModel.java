@@ -44,6 +44,10 @@ public class TrackModel {
         return pieces.getNext();
     }
 
+    public int getNextIndex() {
+        return pieces.getIndex(getNext());
+    }
+
     public void setMyCurrentTrackPiece(TrackPieces piece) {
         this.myCurrentTrackPiece = piece;
     }

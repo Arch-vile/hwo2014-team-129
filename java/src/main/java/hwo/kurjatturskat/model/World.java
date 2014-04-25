@@ -6,6 +6,7 @@ import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.SpawnMsg;
 import hwo.kurjatturskat.core.message.carpositions.CarPosition;
 import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
+import hwo.kurjatturskat.core.message.carpositions.Lane;
 import hwo.kurjatturskat.core.message.carpositions.PiecePosition;
 import hwo.kurjatturskat.core.message.gameend.GameEndBestLaps;
 import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
@@ -23,7 +24,7 @@ import hwo.kurjatturskat.util.Physics;
 import java.util.ArrayList;
 
 public class World {
-
+    private String botName;
     private TrackModel trackModel;
     private CarIdentifier myCar;
     private double recordSpeed = 0;
@@ -34,6 +35,7 @@ public class World {
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
     private TrackPosition previousPosition;
+    private CarPosition opponentPositions[];
 
     private TrackLanes[] lanes;
 
@@ -47,11 +49,16 @@ public class World {
 
     private SpeedSampleCollectorBehaviour dragDataSampler;
 
-    public World(SpeedSampleCollectorBehaviour dragDataSampler) {
+    public World(SpeedSampleCollectorBehaviour dragDataSampler, String botName) {
+        this.botName = botName;
         this.gameStatus = "";
         this.gameResults = null;
         this.dragDataSampler = dragDataSampler;
         this.myTurboOn = false;
+    }
+
+    public String getMyBotName() {
+        return this.botName;
     }
 
     public void update(CarPositionsMsg msg) {
@@ -61,7 +68,7 @@ public class World {
             return;
         }
         PiecePosition myPiecePos = myCarPosition.piecePosition;
-        trackModel.setMyCurrentTrackPiece(myPiecePos.pieceIndex);
+        this.trackModel.setMyCurrentTrackPiece(myPiecePos.pieceIndex);
         TrackPosition trackPos = new TrackPosition(msg.gameTick,
                 myPiecePos.pieceIndex, myPiecePos.inPieceDistance,
                 myPiecePos.lane, trackModel.getCurrent(), myCarPosition.angle);
@@ -77,6 +84,9 @@ public class World {
         this.previousPosition = trackPos;
         // System.out.println("Speed (" + myPiecePos.pieceIndex + ", distance "
         // + this.distanceTraveled + "): " + speed);
+
+        // Update all car positions on track
+        this.opponentPositions = msg.getData();
     }
 
     public double getMyRecordSpeed() {
@@ -223,11 +233,11 @@ public class World {
     }
 
     public TrackPosition getPreviousPosition() {
-        return previousPosition;
+        return this.previousPosition;
     }
 
     public TrackLanes[] getLanes() {
-        return lanes;
+        return this.lanes;
     }
 
     public TrackLanes getMyLane() {
@@ -241,7 +251,7 @@ public class World {
     }
 
     public TrackLanes isLeftLane() {
-        for (TrackLanes lane : getLanes()) {
+        for (TrackLanes lane : this.getLanes()) {
             if (lane.index < this.getMyLane().index) {
                 return lane;
             }
@@ -250,7 +260,7 @@ public class World {
     }
 
     public TrackLanes isRightLane() {
-        for (TrackLanes lane : getLanes()) {
+        for (TrackLanes lane : this.getLanes()) {
             if (lane.index > this.getMyLane().index) {
                 return lane;
             }
@@ -284,4 +294,26 @@ public class World {
         }
     }
 
+    public boolean isOnSameLane(Lane lane) {
+        if (lane.endLaneIndex == this.getPreviousPosition().lane.endLaneIndex) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean anyoneAheadAndSameLane() {
+        this.getTrackModel().getCurrentIndex();
+        for (CarPosition pos : this.opponentPositions) {
+            if (!pos.id.isSameCar(this.myCar)) {
+                if ((this.getTrackModel().getCurrentIndex() == pos.piecePosition.pieceIndex && this
+                        .getPreviousPosition().inPieceDistance < pos.piecePosition.inPieceDistance)
+                        || this.getTrackModel().getNextIndex() == pos.piecePosition.pieceIndex) {
+                    if (isOnSameLane(pos.piecePosition.lane)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

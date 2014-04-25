@@ -84,7 +84,7 @@ public class Draw {
     }
 
     public void plotStats() {
-
+        this.statusBoard.append(String.format("%s\n", world.getMyBotName()));
         this.statusBoard.append(String.format("Lap: %s/%s\n", world
                 .getLapResults().getLaps().size() + 1, world.getLapResults()
                 .getRaceSession().laps));

@@ -41,7 +41,8 @@ public class ShortestPathBehaviour implements LaneBehaviour {
                     && world.getTrackModel().getNextCurveStart().isCurveLeft()) {
                 return "Left";
             }
-        } else if (world.isRightLane() != null) {
+        }
+        if (world.isRightLane() != null) {
             double rightLength = world.getTrackModel()
                     .getLaneDistanceBetweenPieces(nSwitch, nnSwitch,
                             world.isRightLane());
@@ -52,7 +53,6 @@ public class ShortestPathBehaviour implements LaneBehaviour {
                 return "Right";
             }
         }
-
         return null;
     }
 }
