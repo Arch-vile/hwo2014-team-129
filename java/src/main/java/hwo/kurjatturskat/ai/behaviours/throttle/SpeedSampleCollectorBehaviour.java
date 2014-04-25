@@ -6,7 +6,7 @@ import hwo.kurjatturskat.model.World;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DragEstimateBehaviour implements ThrottleBehaviour {
+public class SpeedSampleCollectorBehaviour implements ThrottleBehaviour {
 
     // To eliminate off-by-one errors and other strange behaviour related to
     // changing throttle keep enough points

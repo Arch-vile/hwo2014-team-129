@@ -1,15 +1,17 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 
 public class DragEstimator {
+
+    public final static double TIME_STEP = 1d / 2000d;
 
     // Drag constant
     private Double D;
 
-    private DragEstimateBehaviour dragDataSampler;
+    private SpeedSampleCollectorBehaviour dragDataSampler;
 
-    public DragEstimator(DragEstimateBehaviour dragDataSampler) {
+    public DragEstimator(SpeedSampleCollectorBehaviour dragDataSampler) {
         this.dragDataSampler = dragDataSampler;
     }
 
@@ -20,17 +22,6 @@ public class DragEstimator {
             D = estimateDragConstant(samplesOnZeroThrottle[0],
                     samplesOnZeroThrottle[1]);
             System.out.println("Estimated drag constant:" + D);
-            System.out.println("Verifying....");
-
-            for (int i = 0; i < dragDataSampler
-                    .getRecorededValuesOnZeroThrottle().size() - 1; i++) {
-                System.out.println("Expected\t"
-                        + dragDataSampler.getRecorededValuesOnZeroThrottle()
-                                .get(i + 1));
-                System.out.println("Got\t\t"
-                        + getSpeedOnNextTickWhenOnZeroThrottle(dragDataSampler
-                                .getRecorededValuesOnZeroThrottle().get(i)));
-            }
         }
 
         return D;
@@ -57,7 +48,7 @@ public class DragEstimator {
 
             double errorOnMiddle = errorWithEstimatedDrag(speedOnFirstTick,
                     speedOnSecondTick, middle);
-            if (errorOnMiddle < 0.00001) {
+            if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
 
@@ -87,12 +78,11 @@ public class DragEstimator {
     private double getSpeedOnNextTickWhenOnZeroThrottle(double K,
             double startSpeed) {
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+        double totalTime = TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedDecrease(timeStep,
+            startSpeedForNextStep += speedDecrease(TIME_STEP,
                     startSpeedForNextStep, K);
-            totalTime += timeStep;
+            totalTime += TIME_STEP;
         }
         return startSpeedForNextStep;
     }
@@ -102,23 +92,17 @@ public class DragEstimator {
             return startSpeed;
 
         double startSpeedForNextStep = startSpeed;
-        double timeStep = 1d / 2000d;
-        double totalTime = timeStep;
+        double totalTime = TIME_STEP;
         while (totalTime <= 1) {
-            startSpeedForNextStep += speedDecrease(timeStep,
+            startSpeedForNextStep += speedDecrease(TIME_STEP,
                     startSpeedForNextStep, D);
-            totalTime += timeStep;
+            totalTime += TIME_STEP;
         }
         return startSpeedForNextStep;
     }
 
     private double speedDecrease(double timeStep, double speed, double K) {
         double result = -1 * K * speed * timeStep;
-        return result;
-    }
-
-    public double speedDecrease(double timeStep, double speed) {
-        double result = -1 * D * speed * timeStep;
         return result;
     }
 

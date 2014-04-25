@@ -1,6 +1,6 @@
 package hwo.kurjatturskat.model;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.DragEstimateBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.SpawnMsg;
@@ -45,9 +45,9 @@ public class World {
 
     private TurboAvailable turbo;
 
-    private DragEstimateBehaviour dragDataSampler;
+    private SpeedSampleCollectorBehaviour dragDataSampler;
 
-    public World(DragEstimateBehaviour dragDataSampler) {
+    public World(SpeedSampleCollectorBehaviour dragDataSampler) {
         this.gameStatus = "";
         this.gameResults = null;
         this.dragDataSampler = dragDataSampler;
