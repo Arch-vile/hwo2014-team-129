@@ -91,18 +91,23 @@ public class AccelerationEstimator {
         return startSpeedForNextStep;
     }
 
-    public double getSpeedOnNextTick(double startSpeed, double throttle) {
+    public double getSpeed(double startSpeed, double throttle, Integer timeSteps) {
         if (A == null)
             return startSpeed;
 
         double startSpeedForNextStep = startSpeed;
         double totalTime = DragEstimator.TIME_STEP;
-        while (totalTime <= 1) {
+        while (totalTime <= DragEstimator.TIME_STEP * timeSteps.doubleValue()) {
             startSpeedForNextStep += speedIncrease(DragEstimator.TIME_STEP,
                     startSpeedForNextStep, A, throttle);
             totalTime += DragEstimator.TIME_STEP;
         }
         return startSpeedForNextStep;
+    }
+
+    public double getSpeedOnNextTick(double startSpeed, double throttle) {
+        return getSpeed(startSpeed, throttle,
+                (int) (1d / DragEstimator.TIME_STEP));
     }
 
     private double speedIncrease(double timeStep, double speed, double a,

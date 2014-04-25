@@ -19,11 +19,13 @@ public class SpeedCalculusVerificatorBehaviour implements ThrottleBehaviour {
                     .getSpeedOnNextTick(lastSpeed, lastThrottle);
 
             if (world.onTrack()
-                    && Math.abs(estimatedSpeed - currentSpeed) > 0.00001) {
+                    && Math.abs(estimatedSpeed - currentSpeed) > 0.001) {
                 System.err
-                        .println("Speed calculations mismatch!! Nothing wont work!!");
-                System.err.println("Expected:\t" + currentSpeed);
-                System.err.println("Got:\t\t" + estimatedSpeed);
+                        .println("Speed calculations mismatch!! Things may act funny!!");
+                System.err.println("Expected speed:\t" + currentSpeed);
+                System.err.println("Got speed:\t\t" + estimatedSpeed);
+                System.err.println("Difference:\t\t"
+                        + Math.abs(estimatedSpeed - currentSpeed));
             }
 
         }

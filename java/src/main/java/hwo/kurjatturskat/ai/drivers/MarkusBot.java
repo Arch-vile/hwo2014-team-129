@@ -15,5 +15,4 @@ public class MarkusBot extends Driver {
         this.addLaneBehaviour(new ShortestPathBehaviour());
         this.addTurboBehaviour(new TurboOnStraightBehaviour());
     }
-
 }

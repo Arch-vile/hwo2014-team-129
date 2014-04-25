@@ -81,6 +81,15 @@ public class BotRunner {
                 && !tournamentEnd(message)) {
 
             updateWorld(message);
+
+            // TODO: move all estimators to the Driver
+            if (world.myPhysics.getAccelerationEstimator() != null) {
+                if (!this.driver.slipEstimatorSet()) {
+                    this.driver.setSlipEstimatingBehaviour(world.myPhysics
+                            .getAccelerationEstimator());
+                }
+            }
+
             if (this.draw)
                 plotter.plot();
 

@@ -49,6 +49,7 @@ public class World {
 
     private SpeedSampleCollectorBehaviour dragDataSampler;
 
+    // TODO: move all the estimator stuff to driver
     public World(SpeedSampleCollectorBehaviour dragDataSampler, String botName) {
         this.botName = botName;
         this.gameStatus = "";

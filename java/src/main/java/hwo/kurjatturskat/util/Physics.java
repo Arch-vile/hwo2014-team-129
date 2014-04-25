@@ -111,6 +111,8 @@ public class Physics {
     public Physics(TrackLanes[] lanes,
             SpeedSampleCollectorBehaviour dragDataSampler) {
         this.lanes = lanes;
+
+        // TODO: actually combine all the estimators to one behaviour and get the estimators from driver
         this.dragEstimator = new DragEstimator(dragDataSampler);
         this.accelerationEstimator = new AccelerationEstimator(dragDataSampler,
                 dragEstimator);
@@ -119,6 +121,14 @@ public class Physics {
     public void setCarDimensions(double carLength, double flagPosition) {
         this.carLength = carLength;
         this.flagPosition = flagPosition;
+    }
+
+    public double getCarLength() {
+        return carLength;
+    }
+
+    public double getFlagPosition() {
+        return flagPosition;
     }
 
     public void addTrackPosition(TrackPosition position) {

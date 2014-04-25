@@ -3,8 +3,10 @@ package hwo.kurjatturskat.ai.drivers;
 import hwo.kurjatturskat.ai.behaviours.spec.LaneBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.TurboBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SlipConstantEstimatorBehaviour;
 import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
 import hwo.kurjatturskat.model.World;
+import hwo.kurjatturskat.util.AccelerationEstimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,10 @@ public class Driver {
     private List<TurboBehaviour> turboBehaviours;
     private SpeedSampleCollectorBehaviour dragEstimateBehaviour;
 
+    // TODO: remove tweak code. fix when below todo also done.
+    private boolean set = false;
+
+    // TODO: move all the estimators to be part of the behavious like the slip estimator
     public Driver() {
         this.throttleBehaviours = new ArrayList<>();
         dragEstimateBehaviour = new SpeedSampleCollectorBehaviour();
@@ -23,6 +29,12 @@ public class Driver {
 
         this.laneBehaviours = new ArrayList<>();
         this.turboBehaviours = new ArrayList<>();
+    }
+
+    public void setSlipEstimatingBehaviour(AccelerationEstimator accEstimator) {
+        this.throttleBehaviours.add(0, new SlipConstantEstimatorBehaviour(
+                accEstimator));
+        this.set = true;
     }
 
     protected void addThrottleBehaviour(ThrottleBehaviour behaviour) {
@@ -70,6 +82,10 @@ public class Driver {
 
     public SpeedSampleCollectorBehaviour getDragEstimateBehaviour() {
         return this.dragEstimateBehaviour;
+    }
+
+    public boolean slipEstimatorSet() {
+        return set;
     }
 
 }
