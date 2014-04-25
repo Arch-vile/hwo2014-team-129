@@ -1,6 +1,6 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
+import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.model.TrackPosition;
 
@@ -102,20 +102,24 @@ public class Physics {
 
     private AccelerationEstimator accelerationEstimator;
 
+    private Driver driver;
+
     /**
      * The track lanes are required so we know the distances from center.
      * TrackUtils need lane information for distance calculation.
      * 
      * @param lanes
      */
-    public Physics(TrackLanes[] lanes,
-            SpeedSampleCollectorBehaviour dragDataSampler) {
+    // TODO: maybe to have the World as param
+    public Physics(TrackLanes[] lanes, Driver driver) {
         this.lanes = lanes;
+        this.driver = driver;
 
         // TODO: actually combine all the estimators to one behaviour and get the estimators from driver
-        this.dragEstimator = new DragEstimator(dragDataSampler);
-        this.accelerationEstimator = new AccelerationEstimator(dragDataSampler,
-                dragEstimator);
+        this.dragEstimator = new DragEstimator(
+                driver.getDragEstimateBehaviour());
+        this.accelerationEstimator = new AccelerationEstimator(
+                driver.getDragEstimateBehaviour(), dragEstimator);
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {

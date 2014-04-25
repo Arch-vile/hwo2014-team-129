@@ -1,6 +1,6 @@
 package hwo.kurjatturskat.model;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
+import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.SpawnMsg;
@@ -47,14 +47,14 @@ public class World {
 
     private TurboAvailable turbo;
 
-    private SpeedSampleCollectorBehaviour dragDataSampler;
+    private Driver driver;
 
     // TODO: move all the estimator stuff to driver
-    public World(SpeedSampleCollectorBehaviour dragDataSampler, String botName) {
+    public World(Driver driver, String botName) {
         this.botName = botName;
         this.gameStatus = "";
         this.gameResults = null;
-        this.dragDataSampler = dragDataSampler;
+        this.driver = driver;
         this.myTurboOn = false;
     }
 
@@ -105,7 +105,7 @@ public class World {
                 message.getData().race.track.id,
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
-        this.myPhysics = new Physics(this.lanes, this.dragDataSampler);
+        this.myPhysics = new Physics(this.lanes, this.driver);
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
             CarIdentifier car = carDimensions.id;
