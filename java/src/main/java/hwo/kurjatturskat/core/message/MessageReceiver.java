@@ -4,6 +4,8 @@ import hwo.kurjatturskat.core.message.carpositions.CarPositionsMsg;
 import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboEndMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboStartMsg;
 import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 
@@ -69,6 +71,12 @@ public class MessageReceiver {
 
             case turboAvailable:
                 return gson.fromJson(line, TurboAvailableMsg.class);
+
+            case turboStart:
+                return gson.fromJson(line, TurboStartMsg.class);
+
+            case turboEnd:
+                return gson.fromJson(line, TurboEndMsg.class);
 
             case tournamentEnd:
                 return msg;

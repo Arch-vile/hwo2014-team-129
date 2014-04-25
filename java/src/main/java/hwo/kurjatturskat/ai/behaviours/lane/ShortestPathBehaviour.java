@@ -17,6 +17,19 @@ public class ShortestPathBehaviour implements LaneBehaviour {
         double myLength = world.getTrackModel().getLaneDistanceBetweenPieces(
                 nSwitch, nnSwitch, myLane);
 
+        // Change to longer lane if turbo on.
+        if (world.isMyTurboOn()) {
+            if (world.getTrackModel().getNextCurveStart().isCurveRight()) {
+                if (world.isLeftLane() != null) {
+                    return "Left";
+                }
+            } else if (world.getTrackModel().getNextCurveStart().isCurveLeft()) {
+                if (world.isRightLane() != null) {
+                    return "Right";
+                }
+            }
+        }
+
         // NOTICE: Only one lane change can be done on switch.
         if (world.isLeftLane() != null) {
             double leftLength = world.getTrackModel()

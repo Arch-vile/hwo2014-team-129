@@ -7,10 +7,11 @@ public class TurboOnStraightBehaviour implements TurboBehaviour {
 
     @Override
     public Boolean launchTurbo(World world) {
-        if (!world.getTrackModel().getCurrent().isCurve()) {
-            return true;
+        if (world.getTurbo() != null) {
+            if (!world.getTrackModel().getCurrent().isCurve()) {
+                return true;
+            }
         }
         return null;
     }
-
 }

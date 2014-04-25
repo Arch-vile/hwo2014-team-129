@@ -14,6 +14,8 @@ import hwo.kurjatturskat.core.message.gameinit.CarDimensions;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboEndMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboStartMsg;
 import hwo.kurjatturskat.core.message.turboavailable.TurboAvailable;
 import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.util.Physics;
@@ -27,6 +29,7 @@ public class World {
     private double recordSpeed = 0;
     private double speed;
     private boolean onTrack;
+    private boolean myTurboOn;
 
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
@@ -48,6 +51,7 @@ public class World {
         this.gameStatus = "";
         this.gameResults = null;
         this.dragDataSampler = dragDataSampler;
+        this.myTurboOn = false;
     }
 
     public void update(CarPositionsMsg msg) {
@@ -197,6 +201,7 @@ public class World {
                 && this.myCar.color.equals(message.getData().color)) {
             System.out.println("We crashed!");
             this.onTrack = false;
+            this.myTurboOn = false;
         }
     }
 
@@ -259,6 +264,24 @@ public class World {
 
     public void clearTurbo() {
         this.turbo = null;
+    }
+
+    public boolean isMyTurboOn() {
+        return this.myTurboOn;
+    }
+
+    public void update(TurboStartMsg message) {
+        if (message.getData().isSameCar(this.myCar)) {
+            System.out.println("My turbo on!");
+            this.myTurboOn = true;
+        }
+    }
+
+    public void update(TurboEndMsg message) {
+        if (message.getData().isSameCar(this.myCar)) {
+            System.out.println("My turbo off!");
+            this.myTurboOn = false;
+        }
     }
 
 }

@@ -20,6 +20,8 @@ import hwo.kurjatturskat.core.message.gameend.GameEndMsg;
 import hwo.kurjatturskat.core.message.gameinit.GameInitMsg;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.core.message.lapfinished.LapFinishedMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboEndMsg;
+import hwo.kurjatturskat.core.message.turbo.TurboStartMsg;
 import hwo.kurjatturskat.core.message.turboavailable.TurboAvailableMsg;
 import hwo.kurjatturskat.core.message.yourcar.YourCarMsg;
 import hwo.kurjatturskat.model.World;
@@ -219,6 +221,13 @@ public class BotRunner {
             break;
         case turboAvailable:
             this.world.update((TurboAvailableMsg) message);
+            break;
+        // Not in techspec!
+        case turboStart:
+            this.world.update((TurboStartMsg) message);
+            break;
+        case turboEnd:
+            this.world.update((TurboEndMsg) message);
             break;
 
         default:
