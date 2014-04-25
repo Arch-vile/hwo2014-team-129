@@ -41,11 +41,21 @@ public class TrackModel {
     }
 
     public TrackPieces getNext() {
+        this.pieces.setCurrent(this.getCurrent());
         return pieces.getNext();
     }
 
     public int getNextIndex() {
         return pieces.getIndex(getNext());
+    }
+
+    public TrackPieces getPrev() {
+        this.pieces.setCurrent(this.getCurrent());
+        return pieces.getPrev();
+    }
+
+    public int getPrevIndex() {
+        return pieces.getIndex(getPrev());
     }
 
     public void setMyCurrentTrackPiece(TrackPieces piece) {

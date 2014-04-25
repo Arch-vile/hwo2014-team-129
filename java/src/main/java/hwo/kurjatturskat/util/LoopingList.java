@@ -39,6 +39,10 @@ public class LoopingList<T> {
         return this.items.get(nextIndex());
     }
 
+    public T getPrev() {
+        return this.items.get(prevIndex());
+    }
+
     public T advance() {
         this.index = nextIndex();
         return getCurrent();
@@ -46,6 +50,10 @@ public class LoopingList<T> {
 
     private int nextIndex() {
         return normalize(index + 1);
+    }
+
+    private int prevIndex() {
+        return normalize(this.items.size() + index - 1);
     }
 
     private int normalize(int index) {
