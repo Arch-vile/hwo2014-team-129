@@ -49,7 +49,6 @@ public class World {
 
     private Driver driver;
 
-    // TODO: move all the estimator stuff to driver
     public World(Driver driver, String botName) {
         this.botName = botName;
         this.gameStatus = "";
