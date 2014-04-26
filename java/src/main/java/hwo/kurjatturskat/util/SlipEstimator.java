@@ -58,7 +58,6 @@ public class SlipEstimator {
                     lowerLimit);
             double errorOnUpperLimit = errorWithGuessSlip(sample1, sample2,
                     upperLimit);
-            System.out.println(lowerLimit + " -- " + upperLimit);
 
             double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
             if (errorOnUpperLimit < errorOnLowerLimit) {
@@ -68,7 +67,6 @@ public class SlipEstimator {
             }
 
             double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
-            //System.out.println(errorOnMiddle);
 
             if (errorOnMiddle < 0.0000001) {
                 return middle;
