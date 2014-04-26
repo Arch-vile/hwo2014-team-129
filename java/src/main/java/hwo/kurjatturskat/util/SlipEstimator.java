@@ -50,9 +50,10 @@ public class SlipEstimator {
     }
 
     private Double estimateSlipConstantS(DataSample sample1, DataSample sample2) {
-        double lowerLimit = -10000;
-        double upperLimit = 10000;
+        double lowerLimit = -1000;
+        double upperLimit = 1000;
 
+        int iterations = 0;
         while (true) {
             double errorOnLowerLimit = errorWithGuessSlip(sample1, sample2,
                     lowerLimit);
@@ -60,17 +61,26 @@ public class SlipEstimator {
                     upperLimit);
 
             double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
+            double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
+
             if (errorOnUpperLimit < errorOnLowerLimit) {
                 lowerLimit = middle;
             } else {
                 upperLimit = middle;
             }
 
-            double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
-
+            System.out
+                    .println(String
+                            .format("lower limit: %s upper limit %s error on lower: %s error on upper %s middle: %s error on middle: %s",
+                                    lowerLimit, upperLimit, errorOnLowerLimit,
+                                    errorOnUpperLimit, middle, errorOnMiddle));
             if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
+
+            //            iterations++;
+            //            if (iterations > 40)
+            //                System.exit(1);
         }
 
     }
