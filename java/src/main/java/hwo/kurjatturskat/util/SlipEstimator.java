@@ -50,7 +50,7 @@ public class SlipEstimator {
     }
 
     private Double estimateSlipConstantS(DataSample sample1, DataSample sample2) {
-        double lowerLimit = 0;
+        double lowerLimit = -10000;
         double upperLimit = 10000;
 
         while (true) {
@@ -58,6 +58,7 @@ public class SlipEstimator {
                     lowerLimit);
             double errorOnUpperLimit = errorWithGuessSlip(sample1, sample2,
                     upperLimit);
+            System.out.println(lowerLimit + " -- " + upperLimit);
 
             double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
             if (errorOnUpperLimit < errorOnLowerLimit) {
@@ -68,7 +69,7 @@ public class SlipEstimator {
 
             double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
             //System.out.println(errorOnMiddle);
-            System.out.println(lowerLimit + " -- " + upperLimit);
+
             if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
@@ -113,7 +114,7 @@ public class SlipEstimator {
         double r = sample.centerDistance;
         double C = slipConstant;
 
-        double alpha = (((v * v) / R) * Math.cos(theta) + C) / r;
+        double alpha = (((v * v) / R) * Math.cos(theta) - C) / r;
 
         // https://www.wolframalpha.com/input/?i=w%3Dw0+%2B+1%2F2*alpha*t^2
         // w = w0 + 1/2 * alpha * t^2
