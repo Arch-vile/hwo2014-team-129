@@ -108,7 +108,7 @@ public class SlipEstimator {
         // C = maaginen vakio
 
         double v = sample.carSpeed;
-        double R = sample.curveRadius;
+        double R = sample.curveRadius - 10; // TODO: select the correct lane to substract/add instead of 10
         double theta = Math.toRadians(sample.slipAngle);
         double r = sample.centerDistance;
         double C = slipConstant;
