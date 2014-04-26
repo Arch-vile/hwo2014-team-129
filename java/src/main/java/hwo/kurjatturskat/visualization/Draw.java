@@ -97,6 +97,9 @@ public class Draw {
         this.statusBoard.append(String.format("Record speed: %s\n",
                 world.getMyRecordSpeed()));
 
+        this.statusBoard.append(String.format("Car angle: %s\n",
+                world.myPhysics.getCurrentCarAngle()));
+
         plotLapTimes();
 
         this.statusBoard.append("\nTurbo available: "
