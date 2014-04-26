@@ -67,6 +67,8 @@ public class SlipEstimator {
             }
 
             double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
+            //System.out.println(errorOnMiddle);
+            System.out.println(lowerLimit + " -- " + upperLimit);
             if (errorOnMiddle < 0.0000001) {
                 return middle;
             }
@@ -79,29 +81,46 @@ public class SlipEstimator {
         return Math.abs(estimateSlipAngle(sample1, guess) - sample2.slipAngle);
     }
 
-    private double estimateSlipAngle(DataSample sample1, double guess) {
-        double startAngle = sample1.slipAngle;
-        double startSpeed = sample1.carSpeed;
-
+    private double estimateSlipAngle(DataSample sample, double guess) {
+        DataSample sampleCopy = sample.copy(); // Copy as we modify
+        //System.out.println("Guess: " + guess);
         double totalTime = DragEstimator.TIME_STEP;
         while (totalTime <= 1) {
-
-            startAngle += angleIncrease(startAngle, sample1, startSpeed, guess,
+            sampleCopy.slipAngle = nextAngle(sampleCopy, guess,
                     DragEstimator.TIME_STEP);
+            sampleCopy.carSpeed = accelerationEstimator.getSpeed(
+                    sampleCopy.carSpeed, sampleCopy.throttle, 1);
             totalTime += DragEstimator.TIME_STEP;
-            startSpeed = accelerationEstimator.getSpeed(startSpeed,
-                    sample1.throttle, 1);
         }
-        return startAngle;
+        return sampleCopy.slipAngle;
     }
 
-    private double angleIncrease(double startAngleDegrees, DataSample sample1,
-            double startSpeed, double slipConstant, double timeStep) {
-        double angleInRadians = Math.toRadians(startAngleDegrees);
-        double angleIncreaseRadians = 0.5
-                * (((startSpeed * startSpeed * Math.cos(angleInRadians)) / sample1.curveRadius) + slipConstant)
-                * (timeStep * timeStep);
-        return Math.toDegrees(angleIncreaseRadians);
+    private double nextAngle(DataSample sample, double slipConstant,
+            double timeStep) {
+
+        // https://www.wolframalpha.com/input/?i=+alpha%3D%28%28v^2%2FR%29*cos%28theta%29-C%29%2Fr
+        // alpha = ( (v^2/R) * cos(theta) - C) / r 
+        // alpha = slip kulmakiihtyvyys
+        // v = auton nopeus
+        // R = mutkan säde
+        // theta = auton slip angle
+        // r = vetoakselin etäisyys auton keskipisteestä
+        // C = maaginen vakio
+
+        double v = sample.carSpeed;
+        double R = sample.curveRadius;
+        double theta = Math.toRadians(sample.slipAngle);
+        double r = sample.centerDistance;
+        double C = slipConstant;
+
+        double alpha = (((v * v) / R) * Math.cos(theta) + C) / r;
+
+        // https://www.wolframalpha.com/input/?i=w%3Dw0+%2B+1%2F2*alpha*t^2
+        // w = w0 + 1/2 * alpha * t^2
+        double newAngle = sample.slipAngle + 0.5 * Math.toDegrees(alpha)
+                * timeStep * timeStep;
+
+        return newAngle;
     }
 
     public Double getSlipConstant() {

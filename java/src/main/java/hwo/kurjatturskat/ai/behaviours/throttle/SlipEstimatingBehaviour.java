@@ -109,6 +109,11 @@ public class SlipEstimatingBehaviour implements ThrottleBehaviour {
                             slipAngle, carSpeed, curveRadius, throttle,
                             centerDistance);
         }
+
+        public DataSample copy() {
+            return new DataSample(slipAngle, carSpeed, curveRadius, throttle,
+                    centerDistance);
+        }
     }
 
 }
