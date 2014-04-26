@@ -8,7 +8,7 @@ import hwo.kurjatturskat.util.SlipEstimator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlipConstantEstimatorBehaviour implements ThrottleBehaviour {
+public class SlipEstimatingBehaviour implements ThrottleBehaviour {
 
     private final int SAMPLE_COUNT = 3;
 
@@ -16,8 +16,7 @@ public class SlipConstantEstimatorBehaviour implements ThrottleBehaviour {
     private SlipEstimator slipEstimator;
     private DataSample lastSample;
 
-    public SlipConstantEstimatorBehaviour(
-            AccelerationEstimator accelerationEstimator) {
+    public SlipEstimatingBehaviour(AccelerationEstimator accelerationEstimator) {
         this.slipEstimator = new SlipEstimator(accelerationEstimator);
     }
 
@@ -80,6 +79,10 @@ public class SlipConstantEstimatorBehaviour implements ThrottleBehaviour {
                 }
             }
         }
+    }
+
+    public SlipEstimator getSlipEstimator() {
+        return slipEstimator;
     }
 
     public static class DataSample {

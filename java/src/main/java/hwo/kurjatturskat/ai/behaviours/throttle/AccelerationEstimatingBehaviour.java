@@ -2,11 +2,13 @@ package hwo.kurjatturskat.ai.behaviours.throttle;
 
 import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
 import hwo.kurjatturskat.model.World;
+import hwo.kurjatturskat.util.AccelerationEstimator;
+import hwo.kurjatturskat.util.DragEstimator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpeedSampleCollectorBehaviour implements ThrottleBehaviour {
+public class AccelerationEstimatingBehaviour implements ThrottleBehaviour {
 
     // To eliminate off-by-one errors and other strange behaviour related to
     // changing throttle keep enough points
@@ -16,6 +18,15 @@ public class SpeedSampleCollectorBehaviour implements ThrottleBehaviour {
     private final List<Double> speedPerTickOnZeroThrottle = new ArrayList<>();
 
     private boolean samplesReady = false;
+
+    private AccelerationEstimator accelerationEstimator;
+    private DragEstimator dragEstimator;
+
+    public AccelerationEstimatingBehaviour() {
+        this.dragEstimator = new DragEstimator();
+        this.accelerationEstimator = new AccelerationEstimator(
+                this.dragEstimator);
+    }
 
     // TODO: make sure we are not doing this on actualy race. only on the time
     // rounds
@@ -39,35 +50,47 @@ public class SpeedSampleCollectorBehaviour implements ThrottleBehaviour {
             return 0d;
         }
 
+        // Ready to estimate
+        if (this.dragEstimator.getD() == null
+                || this.accelerationEstimator.getA() == null) {
+            estimate();
+        }
+
         // Pass control to next throttle behaviour
         samplesReady = true;
         return null;
+    }
+
+    private void estimate() {
+
+        this.dragEstimator
+                .estimateDragConstant(getSpeedSamplesOnZeroThrottle());
+
+        this.accelerationEstimator
+                .estimateAccelerationConstant(getSpeedSamplesOnFullThrottle());
+
     }
 
     public boolean samplesReady() {
         return samplesReady;
     }
 
-    public double[] getSpeedSamplesOnZeroThrottle() {
+    private double[] getSpeedSamplesOnZeroThrottle() {
         double[] samplesOnZeroThrottle = new double[] {
                 this.speedPerTickOnZeroThrottle.get(1),
                 this.speedPerTickOnZeroThrottle.get(2) };
         return samplesOnZeroThrottle;
     }
 
-    public double[] getSpeedSamplesOnFullThrottle() {
+    private double[] getSpeedSamplesOnFullThrottle() {
         double[] samplesOnFullThrottle = new double[] {
                 this.speedPerTickOnFullThrottle.get(1),
                 this.speedPerTickOnFullThrottle.get(2) };
         return samplesOnFullThrottle;
     }
 
-    public List<Double> getRecorededValuesOnZeroThrottle() {
-        return this.speedPerTickOnZeroThrottle;
-    }
-
-    public List<Double> getRecorededValuesOnFullThrottle() {
-        return this.speedPerTickOnFullThrottle;
+    public AccelerationEstimator getAccelerationEstimator() {
+        return this.accelerationEstimator;
     }
 
 }

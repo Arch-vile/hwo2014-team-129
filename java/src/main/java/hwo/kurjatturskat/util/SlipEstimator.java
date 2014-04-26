@@ -1,7 +1,7 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.SlipConstantEstimatorBehaviour;
-import hwo.kurjatturskat.ai.behaviours.throttle.SlipConstantEstimatorBehaviour.DataSample;
+import hwo.kurjatturskat.ai.behaviours.throttle.SlipEstimatingBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SlipEstimatingBehaviour.DataSample;
 
 public class SlipEstimator {
 
@@ -17,12 +17,12 @@ public class SlipEstimator {
     }
 
     public void estimateSlipConstant(DataSample sample1, DataSample sample2) {
-        System.out.println("estimateSlipConstant");
-        System.out.println(sample1);
-        System.out.println(sample2);
-        if (this.S == null) {
+        if (this.accelerationEstimator.getA() != null) {
             S = estimateSlipConstantS(sample1, sample2);
             System.out.println("Estimated slip constant: " + S);
+        } else {
+            System.err
+                    .println("Could not estimate slip constant as acceleration constant not yet found!");
         }
 
     }
@@ -42,8 +42,8 @@ public class SlipEstimator {
             return slipAngle;
         }
 
-        DataSample current = new SlipConstantEstimatorBehaviour.DataSample(
-                slipAngle, carSpeed, curveRadius, throttle, centerDistance);
+        DataSample current = new SlipEstimatingBehaviour.DataSample(slipAngle,
+                carSpeed, curveRadius, throttle, centerDistance);
 
         // TODO: remove the magic number
         return estimateSlipAngle(current, S) - MAGIC_NUMBER;

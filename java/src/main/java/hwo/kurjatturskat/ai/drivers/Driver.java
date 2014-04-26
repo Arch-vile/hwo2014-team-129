@@ -3,10 +3,11 @@ package hwo.kurjatturskat.ai.drivers;
 import hwo.kurjatturskat.ai.behaviours.spec.LaneBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
 import hwo.kurjatturskat.ai.behaviours.spec.TurboBehaviour;
-import hwo.kurjatturskat.ai.behaviours.throttle.SlipConstantEstimatorBehaviour;
-import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.AccelerationEstimatingBehaviour;
+import hwo.kurjatturskat.ai.behaviours.throttle.SlipEstimatingBehaviour;
 import hwo.kurjatturskat.model.World;
 import hwo.kurjatturskat.util.AccelerationEstimator;
+import hwo.kurjatturskat.util.SlipEstimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,25 +17,20 @@ public class Driver {
     private List<ThrottleBehaviour> throttleBehaviours;
     private List<LaneBehaviour> laneBehaviours;
     private List<TurboBehaviour> turboBehaviours;
-    private SpeedSampleCollectorBehaviour dragEstimateBehaviour;
 
-    // TODO: remove tweak code. fix when below todo also done.
-    private boolean set = false;
+    private AccelerationEstimatingBehaviour accelerationEstimatingBehaviour;
+    private SlipEstimatingBehaviour slipEstimatingBehaviour;
 
-    // TODO: move all the estimators to be part of the behavious like the slip estimator
     public Driver() {
         this.throttleBehaviours = new ArrayList<>();
-        dragEstimateBehaviour = new SpeedSampleCollectorBehaviour();
-        this.throttleBehaviours.add(dragEstimateBehaviour);
+        this.accelerationEstimatingBehaviour = new AccelerationEstimatingBehaviour();
+        this.slipEstimatingBehaviour = new SlipEstimatingBehaviour(
+                accelerationEstimatingBehaviour.getAccelerationEstimator());
+        this.throttleBehaviours.add(accelerationEstimatingBehaviour);
+        this.throttleBehaviours.add(slipEstimatingBehaviour);
 
         this.laneBehaviours = new ArrayList<>();
         this.turboBehaviours = new ArrayList<>();
-    }
-
-    public void setSlipEstimatingBehaviour(AccelerationEstimator accEstimator) {
-        this.throttleBehaviours.add(0, new SlipConstantEstimatorBehaviour(
-                accEstimator));
-        this.set = true;
     }
 
     protected void addThrottleBehaviour(ThrottleBehaviour behaviour) {
@@ -80,12 +76,12 @@ public class Driver {
         return null;
     }
 
-    public SpeedSampleCollectorBehaviour getDragEstimateBehaviour() {
-        return this.dragEstimateBehaviour;
+    public AccelerationEstimator getAccelerationEstimator() {
+        return this.accelerationEstimatingBehaviour.getAccelerationEstimator();
     }
 
-    public boolean slipEstimatorSet() {
-        return set;
+    public SlipEstimator getSlipEstimator() {
+        return this.slipEstimatingBehaviour.getSlipEstimator();
     }
 
 }

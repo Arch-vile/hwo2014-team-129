@@ -18,8 +18,6 @@ import org.la4j.vector.dense.BasicVector;
  */
 public class Physics {
 
-    private DragEstimator dragEstimator;
-
     /**
      * Lanes are needed for calculating the distance in previous lane.
      */
@@ -100,8 +98,6 @@ public class Physics {
      */
     private double[] previousCoeffs = new double[3];
 
-    private AccelerationEstimator accelerationEstimator;
-
     private Driver driver;
 
     /**
@@ -114,12 +110,6 @@ public class Physics {
     public Physics(TrackLanes[] lanes, Driver driver) {
         this.lanes = lanes;
         this.driver = driver;
-
-        // TODO: actually combine all the estimators to one behaviour and get the estimators from driver
-        this.dragEstimator = new DragEstimator(
-                driver.getDragEstimateBehaviour());
-        this.accelerationEstimator = new AccelerationEstimator(
-                driver.getDragEstimateBehaviour(), dragEstimator);
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -136,8 +126,6 @@ public class Physics {
     }
 
     public void addTrackPosition(TrackPosition position) {
-        this.dragEstimator.estimateDragConstant();
-        this.accelerationEstimator.estimateAccelerationConstant();
 
         // do speed calculation
         if (this.previousPosition == null) {
@@ -391,11 +379,11 @@ public class Physics {
     }
 
     public AccelerationEstimator getAccelerationEstimator() {
-        return accelerationEstimator;
+        return this.driver.getAccelerationEstimator();
     }
 
-    public DragEstimator getDragEstimator() {
-        return dragEstimator;
+    public SlipEstimator getSlipEstimator() {
+        return this.driver.getSlipEstimator();
     }
 
 }

@@ -1,33 +1,25 @@
 package hwo.kurjatturskat.util;
 
-import hwo.kurjatturskat.ai.behaviours.throttle.SpeedSampleCollectorBehaviour;
-
 public class AccelerationEstimator {
 
     // Acceleration constant
     private Double A;
 
-    private SpeedSampleCollectorBehaviour dragDataSampler;
-    private DragEstimator dragEstimate;
+    private DragEstimator dragEstimator;
 
-    public AccelerationEstimator(SpeedSampleCollectorBehaviour dragDataSampler,
-            DragEstimator dragEstimate) {
-        this.dragDataSampler = dragDataSampler;
-        this.dragEstimate = dragEstimate;
+    public AccelerationEstimator(DragEstimator dragEstimator) {
+        this.dragEstimator = dragEstimator;
     }
 
-    public Double estimateAccelerationConstant() {
-        if (dragDataSampler.samplesReady() && A == null
-                && this.dragEstimate.getD() != null) {
-            double[] samplesOnFullThrottle = dragDataSampler
-                    .getSpeedSamplesOnFullThrottle();
+    public void estimateAccelerationConstant(double[] samplesOnFullThrottle) {
+        if (this.dragEstimator.getD() != null) {
             A = estimateAccelarationConstant(samplesOnFullThrottle[0],
                     samplesOnFullThrottle[1]);
             System.out.println("Estimated acceleration constant:" + A);
-
+        } else {
+            System.err
+                    .println("Trying to estimate acceleration constant before found drag costant!");
         }
-
-        return A;
     }
 
     public double estimateAccelarationConstant(double speedOnFirstTick,
@@ -110,9 +102,10 @@ public class AccelerationEstimator {
                 (int) (1d / DragEstimator.TIME_STEP));
     }
 
+    // TODO: remove the getD() here and use the actual speed value from estimator instead
     private double speedIncrease(double timeStep, double speed, double a,
             double throttle) {
-        double result = throttle * a * timeStep - this.dragEstimate.getD()
+        double result = throttle * a * timeStep - this.dragEstimator.getD()
                 * speed * timeStep;
         return result;
     }
