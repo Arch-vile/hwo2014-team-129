@@ -51,7 +51,7 @@ public class SlipEstimatingBehaviour implements ThrottleBehaviour {
                                 lastSample.carSpeed, lastSample.curveRadius,
                                 lastSample.throttle, lastSample.centerDistance);
 
-                if (Math.abs(current.slipAngle - estimate) > 2d) {
+                if (Math.abs(current.slipAngle - estimate) > 0.0001) {
                     System.err
                             .println("Slip estimate seems off! You are on thin ice now!");
                     System.err.println("\nExpected slip angle:\t"
@@ -59,6 +59,7 @@ public class SlipEstimatingBehaviour implements ThrottleBehaviour {
                     System.err.println("Actual slip angle\t\t:" + estimate);
                     System.err.println("Difference:\t"
                             + (current.slipAngle - estimate));
+                    System.out.println(current);
                 }
             }
 

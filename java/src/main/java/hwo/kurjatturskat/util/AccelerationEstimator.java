@@ -3,7 +3,7 @@ package hwo.kurjatturskat.util;
 public class AccelerationEstimator {
 
     // Acceleration constant
-    private Double A;
+    protected Double A;
 
     private DragEstimator dragEstimator;
 

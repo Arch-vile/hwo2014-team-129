@@ -5,7 +5,7 @@ public class DragEstimator {
     public final static double TIME_STEP = 1d / 2000d;
 
     // Drag constant
-    private Double D;
+    protected Double D;
 
     public void estimateDragConstant(double[] samplesOnZeroThrottle) {
         D = estimateDragConstant(samplesOnZeroThrottle[0],

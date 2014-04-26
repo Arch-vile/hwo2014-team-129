@@ -8,7 +8,7 @@ public class SlipEstimator {
     // Slip constant
     private Double S;
 
-    private double MAGIC_NUMBER = 1.2d;
+    // private double MAGIC_NUMBER = 1.2d;
 
     private AccelerationEstimator accelerationEstimator;
 
@@ -46,7 +46,7 @@ public class SlipEstimator {
                 carSpeed, curveRadius, throttle, centerDistance);
 
         // TODO: remove the magic number
-        return estimateSlipAngle(current, S) - MAGIC_NUMBER;
+        return estimateSlipAngle(current, S);
     }
 
     private Double estimateSlipConstantS(DataSample sample1, DataSample sample2) {
