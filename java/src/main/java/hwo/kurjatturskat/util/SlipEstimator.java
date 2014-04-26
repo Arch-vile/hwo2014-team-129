@@ -46,7 +46,7 @@ public class SlipEstimator {
                 carSpeed, curveRadius, throttle, centerDistance);
 
         // TODO: remove the magic number
-        return estimateSlipAngle(current, S);
+        return estimateSlipAngleOnNextTick(current, S);
     }
 
     private Double estimateSlipConstantS(DataSample sample1, DataSample sample2) {
@@ -77,14 +77,15 @@ public class SlipEstimator {
 
     private double errorWithGuessSlip(DataSample sample1, DataSample sample2,
             double guess) {
-        return Math.abs(estimateSlipAngle(sample1, guess) - sample2.slipAngle);
+        return Math.abs(estimateSlipAngleOnNextTick(sample1, guess)
+                - sample2.slipAngle);
     }
 
-    private double estimateSlipAngle(DataSample sample, double guess) {
+    private double estimateSlipAngleOnNextTick(DataSample sample, double guess) {
         DataSample sampleCopy = sample.copy(); // Copy as we modify
         //System.out.println("Guess: " + guess);
         double totalTime = DragEstimator.TIME_STEP;
-        while (totalTime <= 1) {
+        while (totalTime <= DragEstimator.ONE_TICK) {
             sampleCopy.slipAngle = nextAngle(sampleCopy, guess,
                     DragEstimator.TIME_STEP);
             sampleCopy.carSpeed = accelerationEstimator.getSpeed(

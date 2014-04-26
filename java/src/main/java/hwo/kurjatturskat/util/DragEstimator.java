@@ -3,6 +3,7 @@ package hwo.kurjatturskat.util;
 public class DragEstimator {
 
     public final static double TIME_STEP = 1d / 2000d;
+    public static final double ONE_TICK = 1d;
 
     // Drag constant
     protected Double D;
