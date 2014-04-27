@@ -316,4 +316,9 @@ public class World {
         }
         return false;
     }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
 }

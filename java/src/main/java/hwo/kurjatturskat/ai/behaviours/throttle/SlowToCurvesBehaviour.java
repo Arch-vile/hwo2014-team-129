@@ -10,14 +10,29 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     private final static double CURVE_SPEED = 5;
 
+    TrackPieces nextCurve;
+    double speedForNextCurve = -1;
+
     @Override
     public Double getThrottle(World world) {
         TrackModel track = world.getTrackModel();
 
+        if (track.getCurrent().equals(nextCurve)) {
+            System.out.println(String.format(
+                    "Wanted speed to curve %s but was %s", speedForNextCurve,
+                    world.getMySpeed()));
+            nextCurve = null;
+        }
+
         if (track.getNext().isCurve()) {
+
             double curveSpeed = determineMaxCurveSpeed(track.getNext());
+
             if (curveSpeed > 10)
                 curveSpeed = 10;
+
+            this.nextCurve = track.getNext();
+            this.speedForNextCurve = curveSpeed;
 
             Double shouldWeBreak = shouldWeBreak(curveSpeed, world);
             if (shouldWeBreak != null) {
