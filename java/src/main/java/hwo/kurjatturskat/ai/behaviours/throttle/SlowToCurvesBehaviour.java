@@ -14,14 +14,19 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
     public Double getThrottle(World world) {
         TrackModel track = world.getTrackModel();
 
+        System.out.println(world.getMySpeed());
+        if (track.getCurrent().isCurve()) {
+            System.exit(1);
+        }
+
         if (track.getNext().isCurve()) {
             double curveSpeed = determineMaxCurveSpeed(track.getNext());
             if (curveSpeed > 10)
                 curveSpeed = 10;
 
-            boolean shouldWeBreak = shouldWeBreak(curveSpeed, world);
-            if (shouldWeBreak) {
-                return 0d;
+            Double shouldWeBreak = shouldWeBreak(curveSpeed, world);
+            if (shouldWeBreak != null) {
+                return shouldWeBreak;
             }
         }
 
@@ -29,7 +34,7 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     }
 
-    private boolean shouldWeBreak(double desiredSpeed, World world) {
+    private Double shouldWeBreak(double desiredSpeed, World world) {
         TrackModel track = world.getTrackModel();
         double currentPieceLength = TrackUtils.getPieceLenght(
                 track.getCurrent(), world.getMyLane());
@@ -38,17 +43,27 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
         int ticksTillCurve = ticksToRunDistance(distanceToCurve, world);
 
-        double endSpeed = world.getMySpeed();
-        for (int i = 0; i < ticksTillCurve - 100; i++) {
-            endSpeed = world.myPhysics.getAccelerationEstimator()
-                    .getSpeedOnNextTick(endSpeed, 0);
+        double newThrottle = 0;
+        double endSpeedError = 10;
+        double lastEndSpeedError = 1;
+        while (endSpeedError < lastEndSpeedError) {
+            lastEndSpeedError = endSpeedError;
+
+            double endSpeed = world.getMySpeed();
+            for (int i = 0; i < ticksTillCurve; i++) {
+                endSpeed = world.myPhysics.getAccelerationEstimator()
+                        .getSpeedOnNextTick(endSpeed, newThrottle);
+            }
+
+            endSpeedError = Math.abs(endSpeed - desiredSpeed);
+            newThrottle += 0.1;
         }
 
-        if (endSpeed > desiredSpeed) {
-            return true;
+        if (newThrottle < world.myPhysics.getThrottle()) {
+            return newThrottle;
+        } else {
+            return null;
         }
-
-        return false;
     }
 
     private int ticksToRunDistance(double distance, World world) {
