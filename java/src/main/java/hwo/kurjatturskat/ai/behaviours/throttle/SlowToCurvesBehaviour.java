@@ -14,11 +14,6 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
     public Double getThrottle(World world) {
         TrackModel track = world.getTrackModel();
 
-        System.out.println(world.getMySpeed());
-        if (track.getCurrent().isCurve()) {
-            System.exit(1);
-        }
-
         if (track.getNext().isCurve()) {
             double curveSpeed = determineMaxCurveSpeed(track.getNext());
             if (curveSpeed > 10)
