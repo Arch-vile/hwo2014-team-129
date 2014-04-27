@@ -3,6 +3,7 @@ package hwo.kurjatturskat.ai.behaviours.lane;
 import hwo.kurjatturskat.ai.behaviours.spec.LaneBehaviour;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
+import hwo.kurjatturskat.model.TrackModel;
 import hwo.kurjatturskat.model.World;
 
 public class ShortestPathBehaviour implements LaneBehaviour {
@@ -19,13 +20,22 @@ public class ShortestPathBehaviour implements LaneBehaviour {
 
         // Change to longer lane if turbo on.
         if (world.isMyTurboOn()) {
-            if (world.getTrackModel().getNextCurveStart().isCurveRight()) {
-                if (world.isLeftLane() != null) {
-                    return "Left";
-                }
-            } else if (world.getTrackModel().getNextCurveStart().isCurveLeft()) {
-                if (world.isRightLane() != null) {
-                    return "Right";
+            TrackModel track = world.getTrackModel();
+            double distToSwitch = track.getLaneDistanceBetweenPieces(
+                    track.getCurrent(), nSwitch, world.getMyLane());
+            double distToCurve = track.getLaneDistanceBetweenPieces(
+                    track.getCurrent(), track.getNextCurveStart(),
+                    world.getMyLane());
+
+            if (distToSwitch < distToCurve && distToCurve < 200) {
+                if (track.getNextCurveStart().isCurveRight()) {
+                    if (world.isLeftLane() != null) {
+                        return "Left";
+                    }
+                } else if (track.getNextCurveStart().isCurveLeft()) {
+                    if (world.isRightLane() != null) {
+                        return "Right";
+                    }
                 }
             }
         }

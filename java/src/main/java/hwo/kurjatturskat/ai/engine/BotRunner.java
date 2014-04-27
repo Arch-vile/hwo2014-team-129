@@ -75,6 +75,7 @@ public class BotRunner {
         Message<?> message = null;
 
         boolean switchSent = false;
+        boolean sendPing = false;
         TrackPieces nextLaneSelectionPoint = world.getTrackModel()
                 .getNextSwitch();
         while ((message = this.receiver.waitForMessage()) != null
@@ -87,21 +88,20 @@ public class BotRunner {
 
             // TODO: clean up
             if (world.isInitialized()) {
-                boolean sendPing = true;
+                sendPing = true;
 
                 String direction = this.driver.getLane(world);
-                if (direction != null) {
-                    if (!switchSent) {
-                        this.sender.sendMessage(new SwitchLaneMsg(direction));
-                        switchSent = true;
-                        sendPing = false;
-                        continue;
-                    } else if (!nextLaneSelectionPoint.equals(world
-                            .getTrackModel().getNextSwitch())) {
-                        switchSent = false;
-                        nextLaneSelectionPoint = world.getTrackModel()
-                                .getNextSwitch();
-                    }
+
+                if (direction != null && !switchSent) {
+                    this.sender.sendMessage(new SwitchLaneMsg(direction));
+                    switchSent = true;
+                    sendPing = false;
+                    continue;
+                } else if (!nextLaneSelectionPoint.equals(world.getTrackModel()
+                        .getNextSwitch())) {
+                    switchSent = false;
+                    nextLaneSelectionPoint = world.getTrackModel()
+                            .getNextSwitch();
                 }
 
                 Boolean turbo = this.driver.launchTurbo(world);
