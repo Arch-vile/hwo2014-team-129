@@ -75,7 +75,6 @@ public class BotRunner {
         Message<?> message = null;
 
         boolean switchSent = false;
-        boolean sendPing = false;
         TrackPieces nextLaneSelectionPoint = world.getTrackModel()
                 .getNextSwitch();
         while ((message = this.receiver.waitForMessage()) != null
@@ -87,8 +86,8 @@ public class BotRunner {
                 plotter.plot();
 
             // TODO: clean up
-            if (world.isInitialized()) {
-                sendPing = true;
+            boolean sendPing = true;
+            if (world.isInitialized() && world.onTrack()) {
 
                 String direction = this.driver.getLane(world);
 
@@ -126,12 +125,11 @@ public class BotRunner {
                     this.sender.sendMessage(new ThrottleMsg(throttle));
                     sendPing = false;
                 }
+            }
 
-                // Send ping message to server if nothing else is sent.
-                if (sendPing) {
-                    this.sender.sendMessage(new PingMsg());
-                }
-
+            // Send ping message to server if nothing else is sent.
+            if (sendPing) {
+                this.sender.sendMessage(new PingMsg());
             }
         }
 
