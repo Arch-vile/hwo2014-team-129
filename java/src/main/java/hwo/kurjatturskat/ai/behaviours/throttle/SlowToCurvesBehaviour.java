@@ -16,6 +16,9 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
     @Override
     public Double getThrottle(World world) {
         TrackModel track = world.getTrackModel();
+        if (world.getMySpeed() == 0) {
+            return 1.0d;
+        }
 
         if (track.getCurrent().equals(nextCurve)) {
             System.out.println(String.format(
