@@ -27,7 +27,7 @@ public class Driver {
         this.slipEstimatingBehaviour = new SlipEstimatingBehaviour(
                 accelerationEstimatingBehaviour.getAccelerationEstimator());
         this.throttleBehaviours.add(accelerationEstimatingBehaviour);
-        this.throttleBehaviours.add(slipEstimatingBehaviour);
+        //this.throttleBehaviours.add(slipEstimatingBehaviour);
 
         this.laneBehaviours = new ArrayList<>();
         this.turboBehaviours = new ArrayList<>();

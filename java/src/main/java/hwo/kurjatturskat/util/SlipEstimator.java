@@ -63,11 +63,11 @@ public class SlipEstimator {
             double middle = ((upperLimit - lowerLimit) / 2d) + lowerLimit;
             double errorOnMiddle = errorWithGuessSlip(sample1, sample2, middle);
 
-            System.out
-                    .println(String
-                            .format("lower limit: %s upper limit %s error on lower: %s error on upper %s middle: %s error on middle: %s",
-                                    lowerLimit, upperLimit, errorOnLowerLimit,
-                                    errorOnUpperLimit, middle, errorOnMiddle));
+            //            System.out
+            //                    .println(String
+            //                            .format("lower limit: %s upper limit %s error on lower: %s error on upper %s middle: %s error on middle: %s",
+            //                                    lowerLimit, upperLimit, errorOnLowerLimit,
+            //                                    errorOnUpperLimit, middle, errorOnMiddle));
 
             if (errorOnUpperLimit < errorOnLowerLimit) {
                 lowerLimit = middle;

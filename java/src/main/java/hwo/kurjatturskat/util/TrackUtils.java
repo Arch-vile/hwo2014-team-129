@@ -43,4 +43,18 @@ public class TrackUtils {
 
         return distance;
     }
+
+    public static double getPieceLenght(TrackPieces current, TrackLanes lane) {
+        if (current.isCurve()) {
+            double ourLaneOffset = lane.distanceFromCenter;
+            if (current.angle < 0) {
+                ourLaneOffset *= -1;
+            }
+
+            return ((Math.abs(current.angle) / 360) * 2 * Math.PI)
+                    * (current.radius - ourLaneOffset);
+        } else {
+            return current.length;
+        }
+    }
 }
