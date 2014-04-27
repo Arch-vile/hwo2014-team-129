@@ -1,7 +1,13 @@
 package hwo.kurjatturskat.core.message.turboavailable;
 
 public class TurboAvailable {
-    double turboDurationMilliseconds;
-    long DurationTicks;
-    double turboFactor;
+    public double turboDurationMilliseconds;
+    public long turboDurationTicks;
+    public double turboFactor;
+
+    public TurboAvailable(double t, long d, double tf) {
+        this.turboDurationMilliseconds = t;
+        this.turboDurationTicks = d;
+        this.turboFactor = tf;
+    }
 }
