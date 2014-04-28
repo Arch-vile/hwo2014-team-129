@@ -4,7 +4,6 @@ import hwo.kurjatturskat.ai.behaviours.spec.ThrottleBehaviour;
 import hwo.kurjatturskat.core.message.gameinit.TrackPieces;
 import hwo.kurjatturskat.model.TrackModel;
 import hwo.kurjatturskat.model.World;
-import hwo.kurjatturskat.util.TrackUtils;
 
 public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
@@ -28,20 +27,17 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
             nextCurve = null;
         }
 
-        if (track.getNext().isCurve()) {
+        double curveSpeed = determineMaxCurveSpeed(track.getNextCurve());
 
-            double curveSpeed = determineMaxCurveSpeed(track.getNext());
+        if (curveSpeed > 10)
+            curveSpeed = 10;
 
-            if (curveSpeed > 10)
-                curveSpeed = 10;
+        this.nextCurve = track.getNextCurve();
+        this.speedForNextCurve = curveSpeed;
 
-            this.nextCurve = track.getNext();
-            this.speedForNextCurve = curveSpeed;
-
-            Double shouldWeBreak = shouldWeBreak(curveSpeed, world);
-            if (shouldWeBreak != null) {
-                return shouldWeBreak;
-            }
+        Double shouldWeBreak = shouldWeBreak(curveSpeed, world);
+        if (shouldWeBreak != null) {
+            return shouldWeBreak;
         }
 
         return null;
@@ -49,55 +45,53 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
     }
 
     private Double shouldWeBreak(double desiredSpeed, World world) {
+
         TrackModel track = world.getTrackModel();
-        double currentPieceLength = TrackUtils.getPieceLenght(
-                track.getCurrent(), world.getMyLane());
+        double distance = track.getLaneDistanceBetweenPieces(
+                track.getCurrent(), track.getNextCurve(), world.getMyLane());
         double inPieceDistance = world.myPhysics.getPreviousPosition().inPieceDistance;
-        double distanceToCurve = currentPieceLength - inPieceDistance;
+        double distanceToCurve = distance - inPieceDistance;
 
         double endSpeed;
         double newThrottle = 0;
-        double lastError = 50;
-        while (true) {
 
-            endSpeed = world.getMySpeed();
+        endSpeed = world.getMySpeed();
 
-            int ticksTillCurve = ticksToRunDistance(distanceToCurve, world,
-                    newThrottle);
-            for (int i = 0; i < ticksTillCurve; i++) {
-                endSpeed = world.myPhysics.getAccelerationEstimator()
-                        .getSpeedOnNextTick(endSpeed, newThrottle);
-            }
+        int ticksTillCurve = ticksToRunDistance(distanceToCurve, world,
+                newThrottle);
 
-            double error = Math.abs(endSpeed - desiredSpeed);
-            if (error < lastError) {
-                lastError = error;
-            } else {
-                break;
-            }
+        if (ticksTillCurve == -1)
+            return null;
 
-            newThrottle += 0.1;
+        for (int i = 0; i < ticksTillCurve; i++) {
+            endSpeed = world.myPhysics.getAccelerationEstimator()
+                    .getSpeedOnNextTick(endSpeed, newThrottle);
         }
 
-        if (newThrottle <= world.myPhysics.getThrottle()) {
-            return newThrottle;
+        // Now we have reached the point that
+        if (endSpeed > desiredSpeed) {
+            return 0d;
         } else {
             return null;
         }
+
     }
 
     private int ticksToRunDistance(double distance, World world, double throttle) {
 
+        double speedAtStartOfTick = world.getMySpeed();
+
         int ticks = 0;
         while (distance > 0) {
-
-            double speedAtStartOfTick = world.getMySpeed();
             double speedAtEndOfTick = world.myPhysics
                     .getAccelerationEstimator().getSpeedOnNextTick(
                             speedAtStartOfTick, throttle);
             double distanceToTravelInNextTick = (speedAtEndOfTick + speedAtEndOfTick) / 2;
+            if (distanceToTravelInNextTick < 0.0001)
+                return -1;
             distance -= distanceToTravelInNextTick;
             ticks++;
+            speedAtStartOfTick = speedAtEndOfTick;
         }
 
         return ticks;

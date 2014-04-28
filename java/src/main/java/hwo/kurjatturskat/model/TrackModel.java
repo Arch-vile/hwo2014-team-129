@@ -95,6 +95,16 @@ public class TrackModel {
         return getNextSwitchByIndex(this.myCurrentTrackPiece);
     }
 
+    public TrackPieces getNextCurve() {
+        this.pieces.setCurrent(getCurrent());
+
+        while (!this.pieces.advance().isCurve()) {
+
+        }
+
+        return this.pieces.getCurrent();
+    }
+
     /*
      * Get number of switch pieces on track.
      */
@@ -176,8 +186,8 @@ public class TrackModel {
     public double getLaneDistanceBetweenPieces(TrackPieces startPiece,
             TrackPieces endPiece, TrackLanes lane) {
 
-        double distance = 0d;
         this.pieces.setCurrent(startPiece);
+        double distance = getLaneLengthOnPiece(this.pieces.getCurrent(), lane);
         while (this.pieces.advance() != endPiece) {
             distance += getLaneLengthOnPiece(this.pieces.getCurrent(), lane);
         }
