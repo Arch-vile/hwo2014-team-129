@@ -22,16 +22,17 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
         }
 
         if (track.getCurrent().equals(nextCurve)) {
-            System.out.println(String.format(
-                    "Wanted speed to curve %s but was %s", speedForNextCurve,
-                    world.getMySpeed()));
+            //            System.out.println(String.format(
+            //                    "Wanted speed to curve %s but was %s", speedForNextCurve,
+            //                    world.getMySpeed()));
             nextCurve = null;
         }
 
-        double curveSpeed = determineMaxCurveSpeed(track.getNextCurve());
+        double curveSpeed = determineMaxCurveSpeed(track.getNextCurve())
+                * ERROR_CORRECTION;
 
         if (curveSpeed > 10)
-            curveSpeed = 10;
+            curveSpeed = 10 * ERROR_CORRECTION;
 
         this.nextCurve = track.getNextCurve();
         this.speedForNextCurve = curveSpeed;
@@ -101,7 +102,7 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     public static double determineMaxCurveSpeed(TrackPieces next) {
         double curveDiffuculty = determineCurveDifficultu(next);
-        return CURVE_SPEED * curveDiffuculty * ERROR_CORRECTION;
+        return CURVE_SPEED * curveDiffuculty;
     }
 
     private static double determineCurveDifficultu(TrackPieces next) {
