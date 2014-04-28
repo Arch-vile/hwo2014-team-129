@@ -217,6 +217,10 @@ public class Physics {
         return this.acceleration;
     }
 
+    public double getCarAngleSpeed() {
+        return this.carAngleSpeed;
+    }
+
     public double getCarAngleAcceleration() {
         return this.carAngleAcceleration;
     }
