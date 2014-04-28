@@ -3,6 +3,7 @@ package hwo.kurjatturskat.util;
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.core.message.gameinit.TrackLanes;
 import hwo.kurjatturskat.model.TrackPosition;
+import hwo.kurjatturskat.model.World;
 
 import org.la4j.LinearAlgebra;
 import org.la4j.linear.LinearSystemSolver;
@@ -100,6 +101,8 @@ public class Physics {
 
     private Driver driver;
 
+    private World world;
+
     /**
      * The track lanes are required so we know the distances from center.
      * TrackUtils need lane information for distance calculation.
@@ -107,9 +110,10 @@ public class Physics {
      * @param lanes
      */
     // TODO: maybe to have the World as param
-    public Physics(TrackLanes[] lanes, Driver driver) {
+    public Physics(TrackLanes[] lanes, Driver driver, World world) {
         this.lanes = lanes;
         this.driver = driver;
+        this.world = world;
     }
 
     public void setCarDimensions(double carLength, double flagPosition) {
@@ -223,7 +227,10 @@ public class Physics {
     }
 
     public double getThrottle() {
-        return this.throttle;
+        if (this.world.isMyTurboOn())
+            return this.throttle * 3;
+        else
+            return this.throttle;
     }
 
     public TrackPosition getPreviousPosition() {

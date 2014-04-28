@@ -1,5 +1,6 @@
 package hwo.kurjatturskat.model;
 
+import hwo.kurjatturskat.ai.behaviours.throttle.SlowToCurvesBehaviour;
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.CrashMsg;
@@ -104,7 +105,7 @@ public class World {
                 message.getData().race.track.id,
                 message.getData().race.track.name);
         this.lanes = message.getData().race.track.lanes;
-        this.myPhysics = new Physics(this.lanes, this.driver);
+        this.myPhysics = new Physics(this.lanes, this.driver, this);
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
             CarIdentifier car = carDimensions.id;
@@ -212,6 +213,7 @@ public class World {
             System.out.println("We crashed!");
             this.onTrack = false;
             this.myTurboOn = false;
+            SlowToCurvesBehaviour.ERROR_CORRECTION = SlowToCurvesBehaviour.ERROR_CORRECTION * 0.85;
         }
     }
 

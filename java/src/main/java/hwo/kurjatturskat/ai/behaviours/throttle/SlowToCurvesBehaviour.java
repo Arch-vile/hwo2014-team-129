@@ -7,7 +7,8 @@ import hwo.kurjatturskat.model.World;
 
 public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
-    private final static double CURVE_SPEED = 5;
+    private final static double CURVE_SPEED = 10;
+    public static double ERROR_CORRECTION = 1;
 
     TrackPieces nextCurve;
     double speedForNextCurve = -1;
@@ -100,10 +101,10 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     public static double determineMaxCurveSpeed(TrackPieces next) {
         double curveDiffuculty = determineCurveDifficultu(next);
-        return CURVE_SPEED * curveDiffuculty;
+        return CURVE_SPEED * curveDiffuculty * ERROR_CORRECTION;
     }
 
     private static double determineCurveDifficultu(TrackPieces next) {
-        return next.radius / 200;
+        return next.radius / 100;
     }
 }
