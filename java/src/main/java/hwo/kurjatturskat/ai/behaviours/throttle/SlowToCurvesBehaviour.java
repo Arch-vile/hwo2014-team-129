@@ -15,6 +15,7 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     @Override
     public Double getThrottle(World world) {
+
         TrackModel track = world.getTrackModel();
         if (world.getMySpeed() == 0) {
             return 1.0d;
@@ -54,32 +55,38 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
         double inPieceDistance = world.myPhysics.getPreviousPosition().inPieceDistance;
         double distanceToCurve = currentPieceLength - inPieceDistance;
 
-        int ticksTillCurve = ticksToRunDistance(distanceToCurve, world);
-
+        double endSpeed;
         double newThrottle = 0;
-        double endSpeedError = 10;
-        double lastEndSpeedError = 1;
-        while (endSpeedError < lastEndSpeedError) {
-            lastEndSpeedError = endSpeedError;
+        double lastError = 50;
+        while (true) {
 
-            double endSpeed = world.getMySpeed();
+            endSpeed = world.getMySpeed();
+
+            int ticksTillCurve = ticksToRunDistance(distanceToCurve, world,
+                    newThrottle);
             for (int i = 0; i < ticksTillCurve; i++) {
                 endSpeed = world.myPhysics.getAccelerationEstimator()
                         .getSpeedOnNextTick(endSpeed, newThrottle);
             }
 
-            endSpeedError = Math.abs(endSpeed - desiredSpeed);
+            double error = Math.abs(endSpeed - desiredSpeed);
+            if (error < lastError) {
+                lastError = error;
+            } else {
+                break;
+            }
+
             newThrottle += 0.1;
         }
 
-        if (newThrottle < world.myPhysics.getThrottle()) {
+        if (newThrottle <= world.myPhysics.getThrottle()) {
             return newThrottle;
         } else {
             return null;
         }
     }
 
-    private int ticksToRunDistance(double distance, World world) {
+    private int ticksToRunDistance(double distance, World world, double throttle) {
 
         int ticks = 0;
         while (distance > 0) {
@@ -87,7 +94,7 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
             double speedAtStartOfTick = world.getMySpeed();
             double speedAtEndOfTick = world.myPhysics
                     .getAccelerationEstimator().getSpeedOnNextTick(
-                            speedAtStartOfTick, world.myPhysics.getThrottle());
+                            speedAtStartOfTick, throttle);
             double distanceToTravelInNextTick = (speedAtEndOfTick + speedAtEndOfTick) / 2;
             distance -= distanceToTravelInNextTick;
             ticks++;
@@ -99,10 +106,10 @@ public class SlowToCurvesBehaviour implements ThrottleBehaviour {
 
     public static double determineMaxCurveSpeed(TrackPieces next) {
         double curveDiffuculty = determineCurveDifficultu(next);
-        return CURVE_SPEED / curveDiffuculty;
+        return CURVE_SPEED * curveDiffuculty;
     }
 
     private static double determineCurveDifficultu(TrackPieces next) {
-        return (100 / next.radius);
+        return next.radius / 200;
     }
 }
