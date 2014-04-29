@@ -103,17 +103,23 @@ public class World {
     }
 
     public void update(GameInitMsg message) {
+        System.out.println("Handling gameInit msg");
         this.trackModel = new TrackModel(message.getData().race.track.pieces,
                 message.getData().race.track.lanes,
                 message.getData().race.raceSession,
                 message.getData().race.track.id,
                 message.getData().race.track.name);
+        System.out.println("Created trackmodel with piece count: "
+                + this.trackModel.getAll().size());
         this.lanes = message.getData().race.track.lanes;
+        System.out.println("Created lanes with count: " + this.lanes.length);
         this.myPhysics = new Physics(this.lanes, this.driver, this);
+        System.out.println("Created new physics");
         // check for my car
         for (CarDimensions carDimensions : message.getData().race.cars) {
             CarIdentifier car = carDimensions.id;
             if (car != null && car.color.equals(this.myCar.color)) {
+                System.out.println("Set car dimensions");
                 this.myPhysics.setCarDimensions(
                         carDimensions.dimensions.length,
                         carDimensions.dimensions.flag);
@@ -127,6 +133,8 @@ public class World {
         } else {
             this.gameStatus = "Race";
         }
+
+        System.out.println("Determined game status: " + this.gameStatus);
     }
 
     public void update(LapFinishedMsg message) {
