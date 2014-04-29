@@ -213,7 +213,7 @@ public class World {
             System.out.println("We crashed!");
             this.onTrack = false;
             this.myTurboOn = false;
-            SlowToCurvesBehaviour.ERROR_CORRECTION = SlowToCurvesBehaviour.ERROR_CORRECTION * 0.85;
+            SlowToCurvesBehaviour.ERROR_CORRECTION = SlowToCurvesBehaviour.ERROR_CORRECTION * 0.80;
         }
     }
 
