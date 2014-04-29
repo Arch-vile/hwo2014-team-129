@@ -65,9 +65,24 @@ public class BotRunner {
     }
 
     public void run() throws Throwable {
+        doJoin();
 
+        // qualifications
+        System.out.println("Qualifications");
         initializeSequence();
+        runMainLoop();
 
+        this.world = new World(driver, botName);
+
+        System.out.println("Race");
+        initializeSequence();
+        runMainLoop();
+
+        shutdown();
+
+    }
+
+    private void runMainLoop() throws IOException {
         PlotterView plotter = null;
         if (this.draw)
             plotter = new PlotterView(world);
@@ -79,6 +94,10 @@ public class BotRunner {
                 .getNextSwitch();
         while ((message = this.receiver.waitForMessage()) != null
                 && !tournamentEnd(message)) {
+
+            if (message.getType().equals(MessageType.gameEnd)) {
+                break;
+            }
 
             updateWorld(message);
 
@@ -132,12 +151,19 @@ public class BotRunner {
                 this.sender.sendMessage(new PingMsg());
             }
         }
-
-        shutdown();
-
     }
 
     private void initializeSequence() throws IOException {
+
+        YourCarMsg yourCarMsg = (YourCarMsg) waitForMsg(MessageType.yourCar);
+        updateWorld(yourCarMsg);
+
+        GameInitMsg gameInitMsg = (GameInitMsg) waitForMsg(MessageType.gameInit);
+        updateWorld(gameInitMsg);
+
+    }
+
+    private void doJoin() {
         if (this.operation.equals("create")) {
             System.out.println("Create new race @" + this.track + ", cars: "
                     + this.cars);
@@ -153,13 +179,6 @@ public class BotRunner {
             System.out.println("Join race!");
             this.sender.sendMessage(new JoinMsg(this.botName, this.botKey));
         }
-
-        YourCarMsg yourCarMsg = (YourCarMsg) waitForMsg(MessageType.yourCar);
-        updateWorld(yourCarMsg);
-
-        GameInitMsg gameInitMsg = (GameInitMsg) waitForMsg(MessageType.gameInit);
-        updateWorld(gameInitMsg);
-
     }
 
     private Message waitForMsg(MessageType type) throws IOException {
@@ -201,6 +220,7 @@ public class BotRunner {
             }
             break;
         case gameInit:
+            System.out.println("updateWorld gameInit msg");
             this.world.update((GameInitMsg) message);
             break;
         case yourCar:
