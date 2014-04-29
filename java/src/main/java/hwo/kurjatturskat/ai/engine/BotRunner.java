@@ -75,7 +75,9 @@ public class BotRunner {
         this.world = new World(driver, botName);
 
         System.out.println("Race");
-        initializeSequence();
+        //initializeSequence();
+        GameInitMsg gameInitMsg = (GameInitMsg) waitForMsg(MessageType.gameInit);
+        updateWorld(gameInitMsg);
         runMainLoop();
 
         shutdown();
