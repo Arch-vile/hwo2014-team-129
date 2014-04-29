@@ -2,6 +2,7 @@ package hwo.kurjatturskat.ai.engine;
 
 import hwo.kurjatturskat.ai.drivers.Driver;
 import hwo.kurjatturskat.ai.drivers.MarkusBot;
+import hwo.kurjatturskat.core.message.CarIdentifier;
 import hwo.kurjatturskat.core.message.CrashMsg;
 import hwo.kurjatturskat.core.message.JoinMsg;
 import hwo.kurjatturskat.core.message.LaunchTurboMsg;
@@ -72,7 +73,9 @@ public class BotRunner {
         initializeSequence();
         runMainLoop();
 
+        CarIdentifier car = world.getMyCar();
         this.world = new World(driver, botName);
+        world.setMyCarId(car);
 
         System.out.println("Race");
         //initializeSequence();

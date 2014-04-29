@@ -33,6 +33,10 @@ public class World {
     private boolean onTrack;
     private boolean myTurboOn;
 
+    public CarIdentifier getMyCar() {
+        return myCar;
+    }
+
     private ArrayList<TrackPosition> myCarTravels = new ArrayList<TrackPosition>();
 
     private TrackPosition previousPosition;
