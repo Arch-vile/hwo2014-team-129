@@ -1,3 +1,7 @@
+## HWO2014 - KurjatTurskat
+
+Start from: '/java'
+
 ## Hello World Open (HWO) 2014 Bot Template
 
 This is the HWO 2014 Bot Template. It contains simple racing bot implementations
